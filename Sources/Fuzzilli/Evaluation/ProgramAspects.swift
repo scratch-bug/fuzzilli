@@ -15,9 +15,12 @@
 /// Aspects of a program that make it special.
 public class ProgramAspects: CustomStringConvertible {
     let outcome: ExecutionOutcome
+    /// Additional corpus weighting derived from execution side effects (e.g. engine traces).
+    public let corpusWeightBonus: Int
 
-    public init(outcome: ExecutionOutcome) {
+    public init(outcome: ExecutionOutcome, corpusWeightBonus: Int = 0) {
         self.outcome = outcome
+        self.corpusWeightBonus = max(0, corpusWeightBonus)
     }
 
     public var description: String {

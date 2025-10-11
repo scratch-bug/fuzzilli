@@ -161,6 +161,15 @@ public struct ILType: Hashable {
         return ILType(definiteType: .string, ext: ext)
     }
 
+    /// Constructs an named string: this is a string that typically has some complex format.
+    ///
+    /// Most code will treat these as strings, but the JavaScriptEnvironment can register
+    /// producingGenerators for them so they can be generated more intelligently.
+    public static func namedString(ofName name: String) -> ILType {
+        let ext = TypeExtension(group: name, properties: Set(), methods: Set(), signature: nil, wasmExt: nil)
+        return ILType(definiteType: .string, ext: ext)
+    }
+
     /// An object for which it is not known what properties or methods it has, if any.
     public static let unknownObject: ILType = .object()
 
@@ -203,7 +212,19 @@ public struct ILType: Hashable {
 
     public static func wasmMemory(limits: Limits, isShared: Bool = false, isMemory64: Bool = false) -> ILType {
         let wasmMemExt = WasmMemoryType(limits: limits, isShared: isShared, isMemory64: isMemory64)
-        return .object(ofGroup: "WasmMemory", withProperties: ["buffer"], withMethods: ["grow", "toResizableBuffer", "ToFixedLengthBuffer"], withWasmType: wasmMemExt)
+        return .object(ofGroup: "WasmMemory", withProperties: ["buffer"], withMethods: ["grow", "toResizableBuffer", "toFixedLengthBuffer"], withWasmType: wasmMemExt)
+    }
+
+    public static func  wasmDataSegment(segmentLength: Int? = nil) -> ILType {
+        let maybeWasmExtention = segmentLength.map { WasmDataSegmentType(segmentLength: $0) }
+        let typeExtension = TypeExtension(group: "WasmDataSegment", properties: Set(), methods: Set(), signature: nil, wasmExt: maybeWasmExtention)
+        return ILType(definiteType: .wasmDataSegment, ext: typeExtension)
+    }
+
+    public static func  wasmElementSegment(segmentLength: Int? = nil) -> ILType {
+        let maybeWasmExtention = segmentLength.map { WasmElementSegmentType(segmentLength: $0) }
+        let typeExtension = TypeExtension(group: "WasmElementSegment", properties: Set(), methods: Set(), signature: nil, wasmExt: maybeWasmExtention)
+        return ILType(definiteType: .wasmElementSegment, ext: typeExtension)
     }
 
     public static func wasmTable(wasmTableType: WasmTableType) -> ILType {
@@ -472,7 +493,7 @@ public struct ILType: Hashable {
     }
 
     public var isEnumeration : Bool {
-        return Is(.string) && ext != nil
+        return Is(.string) && ext != nil && !ext!.properties.isEmpty
     }
 
     public var group: String? {
@@ -502,6 +523,24 @@ public struct ILType: Hashable {
     public var isWasmMemoryType: Bool {
         return wasmMemoryType != nil && ext?.group == "WasmMemory"
     }
+
+
+    public var wasmDataSegmentType: WasmDataSegmentType? {
+        return ext?.wasmExt as? WasmDataSegmentType
+    }
+
+    public var isWasmDataSegmentType: Bool {
+        return wasmDataSegmentType != nil
+    }
+
+    public var wasmElementSegmentType: WasmElementSegmentType? {
+        return ext?.wasmExt as? WasmElementSegmentType
+    }
+
+    public var isWasmElementSegmentType: Bool {
+        return wasmElementSegmentType != nil
+    }
+
 
     public var wasmTableType: WasmTableType? {
         return ext?.wasmExt as? WasmTableType
@@ -1045,7 +1084,10 @@ extension ILType: CustomStringConvertible {
             switch refType.kind {
                 case .Abstract(let heapType):
                     return ".wasmRef(.Abstract(\(nullPrefix)\(heapType)))"
-                case .Index(_):
+                case .Index(let indexRef):
+                    if let desc = indexRef.get() {
+                        return ".wasmRef(\(nullPrefix)Index \(desc.format(abbreviate: abbreviate)))"
+                    }
                     return ".wasmRef(\(nullPrefix)Index)"
             }
         case .wasmFunctionDef:
@@ -1056,13 +1098,15 @@ extension ILType: CustomStringConvertible {
             }
         case .wasmTypeDef:
             if let desc = self.wasmTypeDefinition?.description {
-                if desc is WasmArrayTypeDescription {
-                    return ".wasmTypeDef(Array)"
-                }
+                return ".wasmTypeDef(\(desc))"
             }
             return ".wasmTypeDef(nil)"
         case .exceptionLabel:
             return ".exceptionLabel"
+        case .wasmDataSegment:
+            return ".wasmDataSegment"
+        case .wasmElementSegment:
+            return ".wasmElementSegment"
         default:
             break
         }
@@ -1136,6 +1180,9 @@ struct BaseType: OptionSet, Hashable {
     // loading them.)
     static let wasmPackedI8 = BaseType(rawValue: 1 << 22)
     static let wasmPackedI16 = BaseType(rawValue: 1 << 23)
+
+    static let wasmDataSegment = BaseType(rawValue: 1 << 24)
+    static let wasmElementSegment = BaseType(rawValue: 1 << 25)
 
     static let jsAnything    = BaseType([.undefined, .integer, .float, .string, .boolean, .object, .function, .constructor, .unboundFunction, .bigint, .regexp, .iterable])
 
@@ -1440,7 +1487,7 @@ enum WasmAbstractHeapType: CaseIterable, Comparable {
 
 // A wrapper around a WasmTypeDescription without owning the WasmTypeDescription.
 struct UnownedWasmTypeDescription : Hashable {
-    unowned var description: WasmTypeDescription?
+    private unowned var description: WasmTypeDescription?
 
     init(_ description: WasmTypeDescription? = nil) {
         self.description = description
@@ -1614,10 +1661,63 @@ public class WasmMemoryType: WasmTypeExtension {
     }
 }
 
+public class WasmDataSegmentType: WasmTypeExtension {
+    let segmentLength: Int
+    private(set) var isDropped: Bool
+
+    override func isEqual(to other: WasmTypeExtension) -> Bool {
+        guard let other = other as? WasmDataSegmentType else { return false }
+        return self.segmentLength == other.segmentLength && self.isDropped == other.isDropped
+    }
+
+    override public func hash(into hasher: inout Hasher) {
+        hasher.combine(segmentLength)
+        hasher.combine(isDropped)
+    }
+
+    init(segmentLength: Int) {
+        self.segmentLength = segmentLength
+        self.isDropped = false
+    }
+
+    public func markAsDropped() {
+        self.isDropped = true
+    }
+}
+
+public class WasmElementSegmentType: WasmTypeExtension {
+    let segmentLength: Int
+    private(set) var isDropped: Bool
+
+    override func isEqual(to other: WasmTypeExtension) -> Bool {
+        guard let other = other as? WasmElementSegmentType else { return false }
+        return self.segmentLength == other.segmentLength && self.isDropped == other.isDropped
+    }
+
+    override public func hash(into hasher: inout Hasher) {
+        hasher.combine(segmentLength)
+        hasher.combine(isDropped)
+    }
+
+    init(segmentLength: Int) {
+        self.segmentLength = segmentLength
+        self.isDropped = false
+    }
+
+    public func markAsDropped() {
+        self.isDropped = true
+    }
+}
+
 public class WasmTableType: WasmTypeExtension {
     public struct IndexInTableAndWasmSignature: Hashable {
         let indexInTable: Int
         let signature: WasmSignature
+
+        public init(indexInTable: Int, signature: WasmSignature) {
+            self.indexInTable = indexInTable
+            self.signature = signature
+        }
     }
 
     let elementType: ILType
@@ -1951,11 +2051,11 @@ public func => (parameters: [Parameter], returnType: ILType) -> Signature {
     return Signature(expects: ParameterList(parameters), returns: returnType)
 }
 
-func => (parameters: [ILType], returnTypes: [ILType]) -> WasmSignature {
+public func => (parameters: [ILType], returnTypes: [ILType]) -> WasmSignature {
     return WasmSignature(expects: parameters, returns: returnTypes)
 }
 
-class WasmTypeDescription: Hashable {
+class WasmTypeDescription: Hashable, CustomStringConvertible {
     static let selfReference = WasmTypeDescription(typeGroupIndex: -1)
     public let typeGroupIndex: Int
     // The "closest" super type that is an abstract type (.WasmArray for arrays, .WasmStruct for
@@ -1976,6 +2076,36 @@ class WasmTypeDescription: Hashable {
     func hash(into hasher: inout Hasher) {
         hasher.combine(ObjectIdentifier(self))
     }
+
+    func format(abbreviate: Bool) -> String {
+        if self == .selfReference {
+            return "selfReference"
+        }
+        return "\(typeGroupIndex)"
+    }
+
+    public var description: String {
+        return format(abbreviate: false)
+    }
+}
+
+class WasmSignatureTypeDescription: WasmTypeDescription {
+    var signature: WasmSignature
+
+    init(signature: WasmSignature, typeGroupIndex: Int) {
+        self.signature = signature
+        super.init(typeGroupIndex: typeGroupIndex, superType: .WasmFunc)
+    }
+
+    override func format(abbreviate: Bool) -> String {
+        let abbreviated = "\(super.format(abbreviate: abbreviate)) Func"
+        if abbreviate {
+            return abbreviated
+        }
+        let paramTypes = signature.parameterTypes.map {$0.abbreviated}.joined(separator: ", ")
+        let outputTypes = signature.outputTypes.map {$0.abbreviated}.joined(separator: ", ")
+        return "\(abbreviated)[[\(paramTypes)] => [\(outputTypes)]]"
+    }
 }
 
 class WasmArrayTypeDescription: WasmTypeDescription {
@@ -1987,16 +2117,28 @@ class WasmArrayTypeDescription: WasmTypeDescription {
         self.mutability = mutability
         super.init(typeGroupIndex: typeGroupIndex, superType: .WasmArray)
     }
+
+    override func format(abbreviate: Bool) -> String {
+        let abbreviated = "\(super.format(abbreviate: abbreviate)) Array"
+        if abbreviate {
+            return abbreviated
+        }
+        return "\(abbreviated)[\(mutability ? "mutable" : "immutable") \(elementType.abbreviated)]"
+    }
 }
 
 class WasmStructTypeDescription: WasmTypeDescription {
-    class Field {
+    class Field: CustomStringConvertible {
         var type: ILType
         let mutability: Bool
 
         init(type: ILType, mutability: Bool) {
             self.type = type
             self.mutability = mutability
+        }
+
+        var description: String {
+            return "\(mutability ? "mutable" : "immutable") \(type.abbreviated)"
         }
     }
 
@@ -2005,5 +2147,13 @@ class WasmStructTypeDescription: WasmTypeDescription {
     init(fields: [Field], typeGroupIndex: Int) {
         self.fields = fields
         super.init(typeGroupIndex: typeGroupIndex, superType: .WasmStruct)
+    }
+
+    override func format(abbreviate: Bool) -> String {
+        let abbreviated = "\(super.format(abbreviate: abbreviate)) Struct"
+        if abbreviate {
+            return abbreviated
+        }
+        return "\(abbreviated)[\(fields.map {$0.description}.joined(separator: ", "))]"
     }
 }

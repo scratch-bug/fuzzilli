@@ -22,6 +22,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import Foundation
 import SwiftProtobuf
 
 // If the compiler emits an error on this type, it is because this file
@@ -1541,6 +1542,60 @@ public enum Fuzzilli_Protobuf_WasmAtomicRMWType: SwiftProtobuf.Enum, Swift.CaseI
 
 }
 
+public enum Fuzzilli_Protobuf_WasmAtomicCmpxchgType: SwiftProtobuf.Enum, Swift.CaseIterable {
+  public typealias RawValue = Int
+  case i32Cmpxchg // = 0
+  case i64Cmpxchg // = 1
+  case i32Cmpxchg8U // = 2
+  case i32Cmpxchg16U // = 3
+  case i64Cmpxchg8U // = 4
+  case i64Cmpxchg16U // = 5
+  case i64Cmpxchg32U // = 6
+  case UNRECOGNIZED(Int)
+
+  public init() {
+    self = .i32Cmpxchg
+  }
+
+  public init?(rawValue: Int) {
+    switch rawValue {
+    case 0: self = .i32Cmpxchg
+    case 1: self = .i64Cmpxchg
+    case 2: self = .i32Cmpxchg8U
+    case 3: self = .i32Cmpxchg16U
+    case 4: self = .i64Cmpxchg8U
+    case 5: self = .i64Cmpxchg16U
+    case 6: self = .i64Cmpxchg32U
+    default: self = .UNRECOGNIZED(rawValue)
+    }
+  }
+
+  public var rawValue: Int {
+    switch self {
+    case .i32Cmpxchg: return 0
+    case .i64Cmpxchg: return 1
+    case .i32Cmpxchg8U: return 2
+    case .i32Cmpxchg16U: return 3
+    case .i64Cmpxchg8U: return 4
+    case .i64Cmpxchg16U: return 5
+    case .i64Cmpxchg32U: return 6
+    case .UNRECOGNIZED(let i): return i
+    }
+  }
+
+  // The compiler won't synthesize support with the UNRECOGNIZED case.
+  public static let allCases: [Fuzzilli_Protobuf_WasmAtomicCmpxchgType] = [
+    .i32Cmpxchg,
+    .i64Cmpxchg,
+    .i32Cmpxchg8U,
+    .i32Cmpxchg16U,
+    .i64Cmpxchg8U,
+    .i64Cmpxchg16U,
+    .i64Cmpxchg32U,
+  ]
+
+}
+
 /// Parameters used by function definitions, not an operation by itself.
 public struct Fuzzilli_Protobuf_Parameters: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
@@ -1599,9 +1654,20 @@ public struct Fuzzilli_Protobuf_LoadString: Sendable {
 
   public var value: String = String()
 
+  public var customName: String {
+    get {return _customName ?? String()}
+    set {_customName = newValue}
+  }
+  /// Returns true if `customName` has been explicitly set.
+  public var hasCustomName: Bool {return self._customName != nil}
+  /// Clears the value of `customName`. Subsequent reads from it will return its default value.
+  public mutating func clearCustomName() {self._customName = nil}
+
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public init() {}
+
+  fileprivate var _customName: String? = nil
 }
 
 public struct Fuzzilli_Protobuf_LoadBoolean: Sendable {
@@ -1990,6 +2056,37 @@ public struct Fuzzilli_Protobuf_EndClassInstanceMethod: Sendable {
   public init() {}
 }
 
+public struct Fuzzilli_Protobuf_BeginClassInstanceComputedMethod: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var parameters: Fuzzilli_Protobuf_Parameters {
+    get {return _parameters ?? Fuzzilli_Protobuf_Parameters()}
+    set {_parameters = newValue}
+  }
+  /// Returns true if `parameters` has been explicitly set.
+  public var hasParameters: Bool {return self._parameters != nil}
+  /// Clears the value of `parameters`. Subsequent reads from it will return its default value.
+  public mutating func clearParameters() {self._parameters = nil}
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+
+  fileprivate var _parameters: Fuzzilli_Protobuf_Parameters? = nil
+}
+
+public struct Fuzzilli_Protobuf_EndClassInstanceComputedMethod: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+}
+
 public struct Fuzzilli_Protobuf_BeginClassInstanceGetter: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
@@ -2118,6 +2215,37 @@ public struct Fuzzilli_Protobuf_BeginClassStaticMethod: Sendable {
 }
 
 public struct Fuzzilli_Protobuf_EndClassStaticMethod: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+}
+
+public struct Fuzzilli_Protobuf_BeginClassStaticComputedMethod: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var parameters: Fuzzilli_Protobuf_Parameters {
+    get {return _parameters ?? Fuzzilli_Protobuf_Parameters()}
+    set {_parameters = newValue}
+  }
+  /// Returns true if `parameters` has been explicitly set.
+  public var hasParameters: Bool {return self._parameters != nil}
+  /// Clears the value of `parameters`. Subsequent reads from it will return its default value.
+  public mutating func clearParameters() {self._parameters = nil}
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+
+  fileprivate var _parameters: Fuzzilli_Protobuf_Parameters? = nil
+}
+
+public struct Fuzzilli_Protobuf_EndClassStaticComputedMethod: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -2353,6 +2481,8 @@ public struct Fuzzilli_Protobuf_SetProperty: Sendable {
   // methods supported on all messages.
 
   public var propertyName: String = String()
+
+  public var isGuarded: Bool = false
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -3116,6 +3246,30 @@ public struct Fuzzilli_Protobuf_CreateNamedVariable: Sendable {
   public var variableName: String = String()
 
   public var declarationMode: Fuzzilli_Protobuf_NamedVariableDeclarationMode = .none
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+}
+
+public struct Fuzzilli_Protobuf_CreateNamedDisposableVariable: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var variableName: String = String()
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+}
+
+public struct Fuzzilli_Protobuf_CreateNamedAsyncDisposableVariable: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var variableName: String = String()
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -4854,6 +5008,26 @@ public struct Fuzzilli_Protobuf_WasmTableSet: Sendable {
   fileprivate var _maxSize: Int64? = nil
 }
 
+public struct Fuzzilli_Protobuf_WasmTableSize: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+}
+
+public struct Fuzzilli_Protobuf_WasmTableGrow: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+}
+
 public struct Fuzzilli_Protobuf_WasmCallIndirect: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
@@ -5521,6 +5695,20 @@ public struct Fuzzilli_Protobuf_WasmEndTypeGroup: Sendable {
   public init() {}
 }
 
+public struct Fuzzilli_Protobuf_WasmDefineSignatureType: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var parameterTypes: [Fuzzilli_Protobuf_WasmILType] = []
+
+  public var outputTypes: [Fuzzilli_Protobuf_WasmILType] = []
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+}
+
 public struct Fuzzilli_Protobuf_WasmDefineArrayType: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
@@ -5782,6 +5970,20 @@ public struct Fuzzilli_Protobuf_WasmAtomicRMW: Sendable {
   public init() {}
 }
 
+public struct Fuzzilli_Protobuf_WasmAtomicCmpxchg: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var op: Fuzzilli_Protobuf_WasmAtomicCmpxchgType = .i32Cmpxchg
+
+  public var offset: Int64 = 0
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+}
+
 public struct Fuzzilli_Protobuf_WasmAnyConvertExtern: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
@@ -5802,356 +6004,197 @@ public struct Fuzzilli_Protobuf_WasmExternConvertAny: Sendable {
   public init() {}
 }
 
+public struct Fuzzilli_Protobuf_WasmDefineDataSegment: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var segment: Data = Data()
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+}
+
+public struct Fuzzilli_Protobuf_WasmDropDataSegment: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+}
+
+public struct Fuzzilli_Protobuf_WasmMemoryInit: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+}
+
+public struct Fuzzilli_Protobuf_WasmMemoryCopy: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+}
+
+public struct Fuzzilli_Protobuf_WasmDefineElementSegment: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var size: UInt32 = 0
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+}
+
+public struct Fuzzilli_Protobuf_WasmDropElementSegment: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+}
+
+public struct Fuzzilli_Protobuf_WasmTableInit: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+}
+
+public struct Fuzzilli_Protobuf_WasmTableCopy: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+}
+
 // MARK: - Code below here is support for the SwiftProtobuf runtime.
 
 fileprivate let _protobuf_package = "fuzzilli.protobuf"
 
 extension Fuzzilli_Protobuf_PropertyType: SwiftProtobuf._ProtoNameProviding {
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    0: .same(proto: "VALUE"),
-    1: .same(proto: "GETTER"),
-    2: .same(proto: "SETTER"),
-    3: .same(proto: "GETTERSETTER"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0VALUE\0\u{1}GETTER\0\u{1}SETTER\0\u{1}GETTERSETTER\0")
 }
 
 extension Fuzzilli_Protobuf_UnaryOperator: SwiftProtobuf._ProtoNameProviding {
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    0: .same(proto: "PRE_INC"),
-    1: .same(proto: "PRE_DEC"),
-    2: .same(proto: "POST_INC"),
-    3: .same(proto: "POST_DEC"),
-    4: .same(proto: "LOGICAL_NOT"),
-    5: .same(proto: "BITWISE_NOT"),
-    6: .same(proto: "PLUS"),
-    7: .same(proto: "MINUS"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0PRE_INC\0\u{1}PRE_DEC\0\u{1}POST_INC\0\u{1}POST_DEC\0\u{1}LOGICAL_NOT\0\u{1}BITWISE_NOT\0\u{1}PLUS\0\u{1}MINUS\0")
 }
 
 extension Fuzzilli_Protobuf_BinaryOperator: SwiftProtobuf._ProtoNameProviding {
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    0: .same(proto: "ADD"),
-    1: .same(proto: "SUB"),
-    2: .same(proto: "MUL"),
-    3: .same(proto: "DIV"),
-    4: .same(proto: "MOD"),
-    5: .same(proto: "BIT_AND"),
-    6: .same(proto: "BIT_OR"),
-    7: .same(proto: "LOGICAL_AND"),
-    8: .same(proto: "LOGICAL_OR"),
-    9: .same(proto: "XOR"),
-    10: .same(proto: "LSHIFT"),
-    11: .same(proto: "RSHIFT"),
-    12: .same(proto: "EXP"),
-    13: .same(proto: "UNRSHIFT"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0ADD\0\u{1}SUB\0\u{1}MUL\0\u{1}DIV\0\u{1}MOD\0\u{1}BIT_AND\0\u{1}BIT_OR\0\u{1}LOGICAL_AND\0\u{1}LOGICAL_OR\0\u{1}XOR\0\u{1}LSHIFT\0\u{1}RSHIFT\0\u{1}EXP\0\u{1}UNRSHIFT\0")
 }
 
 extension Fuzzilli_Protobuf_WasmIntegerBinaryOperator: SwiftProtobuf._ProtoNameProviding {
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    0: .same(proto: "WASMI_ADD"),
-    1: .same(proto: "WASMI_SUB"),
-    2: .same(proto: "WASMI_MUL"),
-    3: .same(proto: "WASMI_DIV_S"),
-    4: .same(proto: "WASMI_DIV_U"),
-    5: .same(proto: "WASMI_REM_S"),
-    6: .same(proto: "WASMI_REM_U"),
-    7: .same(proto: "WASMI_AND"),
-    8: .same(proto: "WASMI_OR"),
-    9: .same(proto: "WASMI_XOR"),
-    10: .same(proto: "WASMI_SHL"),
-    11: .same(proto: "WASMI_SHR_S"),
-    12: .same(proto: "WASMI_SHR_U"),
-    13: .same(proto: "WASMI_ROTL"),
-    14: .same(proto: "WASMI_ROTR"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0WASMI_ADD\0\u{1}WASMI_SUB\0\u{1}WASMI_MUL\0\u{1}WASMI_DIV_S\0\u{1}WASMI_DIV_U\0\u{1}WASMI_REM_S\0\u{1}WASMI_REM_U\0\u{1}WASMI_AND\0\u{1}WASMI_OR\0\u{1}WASMI_XOR\0\u{1}WASMI_SHL\0\u{1}WASMI_SHR_S\0\u{1}WASMI_SHR_U\0\u{1}WASMI_ROTL\0\u{1}WASMI_ROTR\0")
 }
 
 extension Fuzzilli_Protobuf_WasmIntegerUnaryOperator: SwiftProtobuf._ProtoNameProviding {
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    0: .same(proto: "WASM_CLZ"),
-    1: .same(proto: "WASM_CTZ"),
-    2: .same(proto: "WASM_POPCNT"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0WASM_CLZ\0\u{1}WASM_CTZ\0\u{1}WASM_POPCNT\0")
 }
 
 extension Fuzzilli_Protobuf_WasmFloatBinaryOperator: SwiftProtobuf._ProtoNameProviding {
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    0: .same(proto: "WASMF_ADD"),
-    1: .same(proto: "WASMF_SUB"),
-    2: .same(proto: "WASMF_MUL"),
-    3: .same(proto: "WASMF_DIV"),
-    4: .same(proto: "WASMF_MIN"),
-    5: .same(proto: "WASMF_MAX"),
-    6: .same(proto: "WASMF_COPYSIGN"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0WASMF_ADD\0\u{1}WASMF_SUB\0\u{1}WASMF_MUL\0\u{1}WASMF_DIV\0\u{1}WASMF_MIN\0\u{1}WASMF_MAX\0\u{1}WASMF_COPYSIGN\0")
 }
 
 extension Fuzzilli_Protobuf_WasmFloatUnaryOperator: SwiftProtobuf._ProtoNameProviding {
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    0: .same(proto: "ABS"),
-    1: .same(proto: "NEG"),
-    2: .same(proto: "CEIL"),
-    3: .same(proto: "FLOOR"),
-    4: .same(proto: "TRUNC"),
-    5: .same(proto: "NEAREST"),
-    6: .same(proto: "SQRT"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0ABS\0\u{1}NEG\0\u{1}CEIL\0\u{1}FLOOR\0\u{1}TRUNC\0\u{1}NEAREST\0\u{1}SQRT\0")
 }
 
 extension Fuzzilli_Protobuf_Comparator: SwiftProtobuf._ProtoNameProviding {
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    0: .same(proto: "EQUAL"),
-    1: .same(proto: "STRICT_EQUAL"),
-    2: .same(proto: "NOT_EQUAL"),
-    3: .same(proto: "STRICT_NOT_EQUAL"),
-    4: .same(proto: "LESS_THAN"),
-    5: .same(proto: "LESS_THAN_OR_EQUAL"),
-    6: .same(proto: "GREATER_THAN"),
-    7: .same(proto: "GREATER_THAN_OR_EQUAL"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0EQUAL\0\u{1}STRICT_EQUAL\0\u{1}NOT_EQUAL\0\u{1}STRICT_NOT_EQUAL\0\u{1}LESS_THAN\0\u{1}LESS_THAN_OR_EQUAL\0\u{1}GREATER_THAN\0\u{1}GREATER_THAN_OR_EQUAL\0")
 }
 
 extension Fuzzilli_Protobuf_NamedVariableDeclarationMode: SwiftProtobuf._ProtoNameProviding {
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    0: .same(proto: "NONE"),
-    1: .same(proto: "GLOBAL"),
-    2: .same(proto: "VAR"),
-    3: .same(proto: "LET"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0NONE\0\u{1}GLOBAL\0\u{1}VAR\0\u{1}LET\0")
 }
 
 extension Fuzzilli_Protobuf_WasmValueType: SwiftProtobuf._ProtoNameProviding {
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    0: .same(proto: "I32"),
-    1: .same(proto: "I64"),
-    2: .same(proto: "F32"),
-    3: .same(proto: "F64"),
-    4: .same(proto: "PACKED_I8"),
-    5: .same(proto: "PACKED_I16"),
-    6: .same(proto: "SIMD128"),
-    7: .same(proto: "FUNCTIONDEF"),
-    8: .same(proto: "NOTHING"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0I32\0\u{1}I64\0\u{1}F32\0\u{1}F64\0\u{1}PACKED_I8\0\u{1}PACKED_I16\0\u{1}SIMD128\0\u{1}FUNCTIONDEF\0\u{1}NOTHING\0")
 }
 
 extension Fuzzilli_Protobuf_WasmReferenceTypeKind: SwiftProtobuf._ProtoNameProviding {
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    0: .same(proto: "INDEX"),
-    1: .same(proto: "EXTERNREF"),
-    2: .same(proto: "FUNCREF"),
-    3: .same(proto: "EXNREF"),
-    4: .same(proto: "I31REF"),
-    5: .same(proto: "ANYREF"),
-    6: .same(proto: "EQREF"),
-    7: .same(proto: "STRUCTREF"),
-    8: .same(proto: "ARRAYREF"),
-    9: .same(proto: "NONEREF"),
-    10: .same(proto: "NOEXTERNREF"),
-    11: .same(proto: "NOFUNCREF"),
-    12: .same(proto: "NOEXNREF"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0INDEX\0\u{1}EXTERNREF\0\u{1}FUNCREF\0\u{1}EXNREF\0\u{1}I31REF\0\u{1}ANYREF\0\u{1}EQREF\0\u{1}STRUCTREF\0\u{1}ARRAYREF\0\u{1}NONEREF\0\u{1}NOEXTERNREF\0\u{1}NOFUNCREF\0\u{1}NOEXNREF\0")
 }
 
 extension Fuzzilli_Protobuf_WasmMemoryLoadType: SwiftProtobuf._ProtoNameProviding {
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    0: .same(proto: "I32_LOADMEM"),
-    1: .same(proto: "I64_LOADMEM"),
-    2: .same(proto: "F32_LOADMEM"),
-    3: .same(proto: "F64_LOADMEM"),
-    4: .same(proto: "I32_LOADMEM_8S"),
-    5: .same(proto: "I32_LOADMEM_8U"),
-    6: .same(proto: "I32_LOADMEM_16S"),
-    7: .same(proto: "I32_LOADMEM_16U"),
-    8: .same(proto: "I64_LOADMEM_8S"),
-    9: .same(proto: "I64_LOADMEM_8U"),
-    10: .same(proto: "I64_LOADMEM_16S"),
-    11: .same(proto: "I64_LOADMEM_16U"),
-    12: .same(proto: "I64_LOADMEM_32S"),
-    13: .same(proto: "I64_LOADMEM_32U"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0I32_LOADMEM\0\u{1}I64_LOADMEM\0\u{1}F32_LOADMEM\0\u{1}F64_LOADMEM\0\u{1}I32_LOADMEM_8S\0\u{1}I32_LOADMEM_8U\0\u{1}I32_LOADMEM_16S\0\u{1}I32_LOADMEM_16U\0\u{1}I64_LOADMEM_8S\0\u{1}I64_LOADMEM_8U\0\u{1}I64_LOADMEM_16S\0\u{1}I64_LOADMEM_16U\0\u{1}I64_LOADMEM_32S\0\u{1}I64_LOADMEM_32U\0")
 }
 
 extension Fuzzilli_Protobuf_WasmMemoryStoreType: SwiftProtobuf._ProtoNameProviding {
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    0: .same(proto: "I32_STOREMEM"),
-    1: .same(proto: "I64_STOREMEM"),
-    2: .same(proto: "F32_STOREMEM"),
-    3: .same(proto: "F64_STOREMEM"),
-    4: .same(proto: "I32_STOREMEM_8"),
-    5: .same(proto: "I32_STOREMEM_16"),
-    6: .same(proto: "I64_STOREMEM_8"),
-    7: .same(proto: "I64_STOREMEM_16"),
-    8: .same(proto: "I64_STOREMEM_32"),
-    9: .same(proto: "S128_STOREMEM"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0I32_STOREMEM\0\u{1}I64_STOREMEM\0\u{1}F32_STOREMEM\0\u{1}F64_STOREMEM\0\u{1}I32_STOREMEM_8\0\u{1}I32_STOREMEM_16\0\u{1}I64_STOREMEM_8\0\u{1}I64_STOREMEM_16\0\u{1}I64_STOREMEM_32\0\u{1}S128_STOREMEM\0")
 }
 
 extension Fuzzilli_Protobuf_WasmCatchKind: SwiftProtobuf._ProtoNameProviding {
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    0: .same(proto: "NO_REF"),
-    1: .same(proto: "REF"),
-    2: .same(proto: "ALL_NO_REF"),
-    3: .same(proto: "ALL_REF"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0NO_REF\0\u{1}REF\0\u{1}ALL_NO_REF\0\u{1}ALL_REF\0")
 }
 
 extension Fuzzilli_Protobuf_WasmBranchHint: SwiftProtobuf._ProtoNameProviding {
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    0: .same(proto: "BRANCHHINT_NONE"),
-    1: .same(proto: "BRANCHHINT_LIKELY"),
-    2: .same(proto: "BRANCHHINT_UNLIKELY"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0BRANCHHINT_NONE\0\u{1}BRANCHHINT_LIKELY\0\u{1}BRANCHHINT_UNLIKELY\0")
 }
 
 extension Fuzzilli_Protobuf_WasmSimdSplatKind: SwiftProtobuf._ProtoNameProviding {
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    0: .same(proto: "I8x16"),
-    1: .same(proto: "I16x8"),
-    2: .same(proto: "I32x4"),
-    3: .same(proto: "I64x2"),
-    4: .same(proto: "F32x4"),
-    5: .same(proto: "F64x2"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0I8x16\0\u{1}I16x8\0\u{1}I32x4\0\u{1}I64x2\0\u{1}F32x4\0\u{1}F64x2\0")
 }
 
 extension Fuzzilli_Protobuf_WasmSimdExtractLaneKind: SwiftProtobuf._ProtoNameProviding {
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    0: .same(proto: "EXTRACTI8x16S"),
-    1: .same(proto: "EXTRACTI8x16U"),
-    2: .same(proto: "EXTRACTI16x8S"),
-    3: .same(proto: "EXTRACTI16x8U"),
-    4: .same(proto: "EXTRACTI32x4"),
-    5: .same(proto: "EXTRACTI64x2"),
-    6: .same(proto: "EXTRACTF32x4"),
-    7: .same(proto: "EXTRACTF64x2"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0EXTRACTI8x16S\0\u{1}EXTRACTI8x16U\0\u{1}EXTRACTI16x8S\0\u{1}EXTRACTI16x8U\0\u{1}EXTRACTI32x4\0\u{1}EXTRACTI64x2\0\u{1}EXTRACTF32x4\0\u{1}EXTRACTF64x2\0")
 }
 
 extension Fuzzilli_Protobuf_WasmSimdReplaceLaneKind: SwiftProtobuf._ProtoNameProviding {
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    0: .same(proto: "REPLACEI8x16"),
-    1: .same(proto: "REPLACEI16x8"),
-    2: .same(proto: "REPLACEI32x4"),
-    3: .same(proto: "REPLACEI64x2"),
-    4: .same(proto: "REPLACEF32x4"),
-    5: .same(proto: "REPLACEF64x2"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0REPLACEI8x16\0\u{1}REPLACEI16x8\0\u{1}REPLACEI32x4\0\u{1}REPLACEI64x2\0\u{1}REPLACEF32x4\0\u{1}REPLACEF64x2\0")
 }
 
 extension Fuzzilli_Protobuf_WasmSimdStoreLaneKind: SwiftProtobuf._ProtoNameProviding {
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    0: .same(proto: "STORE8"),
-    1: .same(proto: "STORE16"),
-    2: .same(proto: "STORE32"),
-    3: .same(proto: "STORE64"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0STORE8\0\u{1}STORE16\0\u{1}STORE32\0\u{1}STORE64\0")
 }
 
 extension Fuzzilli_Protobuf_WasmSimdLoadLaneKind: SwiftProtobuf._ProtoNameProviding {
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    0: .same(proto: "LOAD8"),
-    1: .same(proto: "LOAD16"),
-    2: .same(proto: "LOAD32"),
-    3: .same(proto: "LOAD64"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0LOAD8\0\u{1}LOAD16\0\u{1}LOAD32\0\u{1}LOAD64\0")
 }
 
 extension Fuzzilli_Protobuf_WasmSimdLoadKind: SwiftProtobuf._ProtoNameProviding {
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    0: .same(proto: "LOADS128"),
-    1: .same(proto: "LOAD8x8S"),
-    2: .same(proto: "LOAD8x8U"),
-    3: .same(proto: "LOAD16x4S"),
-    4: .same(proto: "LOAD16x4U"),
-    5: .same(proto: "LOAD32x2S"),
-    6: .same(proto: "LOAD32x2U"),
-    7: .same(proto: "LOAD8SPLAT"),
-    8: .same(proto: "LOAD16SPLAT"),
-    9: .same(proto: "LOAD32SPLAT"),
-    10: .same(proto: "LOAD64SPLAT"),
-    11: .same(proto: "LOAD32ZERO"),
-    12: .same(proto: "LOAD64ZERO"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0LOADS128\0\u{1}LOAD8x8S\0\u{1}LOAD8x8U\0\u{1}LOAD16x4S\0\u{1}LOAD16x4U\0\u{1}LOAD32x2S\0\u{1}LOAD32x2U\0\u{1}LOAD8SPLAT\0\u{1}LOAD16SPLAT\0\u{1}LOAD32SPLAT\0\u{1}LOAD64SPLAT\0\u{1}LOAD32ZERO\0\u{1}LOAD64ZERO\0")
 }
 
 extension Fuzzilli_Protobuf_WasmAtomicLoadType: SwiftProtobuf._ProtoNameProviding {
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    0: .same(proto: "I32_LOAD"),
-    1: .same(proto: "I64_LOAD"),
-    2: .same(proto: "I32_LOAD_8U"),
-    3: .same(proto: "I32_LOAD_16U"),
-    4: .same(proto: "I64_LOAD_8U"),
-    5: .same(proto: "I64_LOAD_16U"),
-    6: .same(proto: "I64_LOAD_32U"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0I32_LOAD\0\u{1}I64_LOAD\0\u{1}I32_LOAD_8U\0\u{1}I32_LOAD_16U\0\u{1}I64_LOAD_8U\0\u{1}I64_LOAD_16U\0\u{1}I64_LOAD_32U\0")
 }
 
 extension Fuzzilli_Protobuf_WasmAtomicStoreType: SwiftProtobuf._ProtoNameProviding {
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    0: .same(proto: "I32_STORE"),
-    1: .same(proto: "I64_STORE"),
-    2: .same(proto: "I32_STORE_8"),
-    3: .same(proto: "I32_STORE_16"),
-    4: .same(proto: "I64_STORE_8"),
-    5: .same(proto: "I64_STORE_16"),
-    6: .same(proto: "I64_STORE_32"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0I32_STORE\0\u{1}I64_STORE\0\u{1}I32_STORE_8\0\u{1}I32_STORE_16\0\u{1}I64_STORE_8\0\u{1}I64_STORE_16\0\u{1}I64_STORE_32\0")
 }
 
 extension Fuzzilli_Protobuf_WasmAtomicRMWType: SwiftProtobuf._ProtoNameProviding {
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    0: .same(proto: "I32_ADD"),
-    1: .same(proto: "I64_ADD"),
-    2: .same(proto: "I32_ADD_8U"),
-    3: .same(proto: "I32_ADD_16U"),
-    4: .same(proto: "I64_ADD_8U"),
-    5: .same(proto: "I64_ADD_16U"),
-    6: .same(proto: "I64_ADD_32U"),
-    7: .same(proto: "I32_SUB"),
-    8: .same(proto: "I64_SUB"),
-    9: .same(proto: "I32_SUB_8U"),
-    10: .same(proto: "I32_SUB_16U"),
-    11: .same(proto: "I64_SUB_8U"),
-    12: .same(proto: "I64_SUB_16U"),
-    13: .same(proto: "I64_SUB_32U"),
-    14: .same(proto: "I32_AND"),
-    15: .same(proto: "I64_AND"),
-    16: .same(proto: "I32_AND_8U"),
-    17: .same(proto: "I32_AND_16U"),
-    18: .same(proto: "I64_AND_8U"),
-    19: .same(proto: "I64_AND_16U"),
-    20: .same(proto: "I64_AND_32U"),
-    21: .same(proto: "I32_OR"),
-    22: .same(proto: "I64_OR"),
-    23: .same(proto: "I32_OR_8U"),
-    24: .same(proto: "I32_OR_16U"),
-    25: .same(proto: "I64_OR_8U"),
-    26: .same(proto: "I64_OR_16U"),
-    27: .same(proto: "I64_OR_32U"),
-    28: .same(proto: "I32_XOR"),
-    29: .same(proto: "I64_XOR"),
-    30: .same(proto: "I32_XOR_8U"),
-    31: .same(proto: "I32_XOR_16U"),
-    32: .same(proto: "I64_XOR_8U"),
-    33: .same(proto: "I64_XOR_16U"),
-    34: .same(proto: "I64_XOR_32U"),
-    35: .same(proto: "I32_XCHG"),
-    36: .same(proto: "I64_XCHG"),
-    37: .same(proto: "I32_XCHG_8U"),
-    38: .same(proto: "I32_XCHG_16U"),
-    39: .same(proto: "I64_XCHG_8U"),
-    40: .same(proto: "I64_XCHG_16U"),
-    41: .same(proto: "I64_XCHG_32U"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0I32_ADD\0\u{1}I64_ADD\0\u{1}I32_ADD_8U\0\u{1}I32_ADD_16U\0\u{1}I64_ADD_8U\0\u{1}I64_ADD_16U\0\u{1}I64_ADD_32U\0\u{1}I32_SUB\0\u{1}I64_SUB\0\u{1}I32_SUB_8U\0\u{1}I32_SUB_16U\0\u{1}I64_SUB_8U\0\u{1}I64_SUB_16U\0\u{1}I64_SUB_32U\0\u{1}I32_AND\0\u{1}I64_AND\0\u{1}I32_AND_8U\0\u{1}I32_AND_16U\0\u{1}I64_AND_8U\0\u{1}I64_AND_16U\0\u{1}I64_AND_32U\0\u{1}I32_OR\0\u{1}I64_OR\0\u{1}I32_OR_8U\0\u{1}I32_OR_16U\0\u{1}I64_OR_8U\0\u{1}I64_OR_16U\0\u{1}I64_OR_32U\0\u{1}I32_XOR\0\u{1}I64_XOR\0\u{1}I32_XOR_8U\0\u{1}I32_XOR_16U\0\u{1}I64_XOR_8U\0\u{1}I64_XOR_16U\0\u{1}I64_XOR_32U\0\u{1}I32_XCHG\0\u{1}I64_XCHG\0\u{1}I32_XCHG_8U\0\u{1}I32_XCHG_16U\0\u{1}I64_XCHG_8U\0\u{1}I64_XCHG_16U\0\u{1}I64_XCHG_32U\0")
+}
+
+extension Fuzzilli_Protobuf_WasmAtomicCmpxchgType: SwiftProtobuf._ProtoNameProviding {
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0I32_CMPXCHG\0\u{1}I64_CMPXCHG\0\u{1}I32_CMPXCHG_8U\0\u{1}I32_CMPXCHG_16U\0\u{1}I64_CMPXCHG_8U\0\u{1}I64_CMPXCHG_16U\0\u{1}I64_CMPXCHG_32U\0")
 }
 
 extension Fuzzilli_Protobuf_Parameters: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".Parameters"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "count"),
-    2: .same(proto: "hasRest"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}count\0\u{1}hasRest\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -6186,9 +6229,7 @@ extension Fuzzilli_Protobuf_Parameters: SwiftProtobuf.Message, SwiftProtobuf._Me
 
 extension Fuzzilli_Protobuf_LoadInteger: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".LoadInteger"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "value"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}value\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -6218,9 +6259,7 @@ extension Fuzzilli_Protobuf_LoadInteger: SwiftProtobuf.Message, SwiftProtobuf._M
 
 extension Fuzzilli_Protobuf_LoadBigInt: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".LoadBigInt"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "value"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}value\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -6250,9 +6289,7 @@ extension Fuzzilli_Protobuf_LoadBigInt: SwiftProtobuf.Message, SwiftProtobuf._Me
 
 extension Fuzzilli_Protobuf_LoadFloat: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".LoadFloat"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "value"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}value\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -6282,9 +6319,7 @@ extension Fuzzilli_Protobuf_LoadFloat: SwiftProtobuf.Message, SwiftProtobuf._Mes
 
 extension Fuzzilli_Protobuf_LoadString: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".LoadString"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "value"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}value\0\u{1}customName\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -6293,20 +6328,29 @@ extension Fuzzilli_Protobuf_LoadString: SwiftProtobuf.Message, SwiftProtobuf._Me
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
       case 1: try { try decoder.decodeSingularStringField(value: &self.value) }()
+      case 2: try { try decoder.decodeSingularStringField(value: &self._customName) }()
       default: break
       }
     }
   }
 
   public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
     if !self.value.isEmpty {
       try visitor.visitSingularStringField(value: self.value, fieldNumber: 1)
     }
+    try { if let v = self._customName {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 2)
+    } }()
     try unknownFields.traverse(visitor: &visitor)
   }
 
   public static func ==(lhs: Fuzzilli_Protobuf_LoadString, rhs: Fuzzilli_Protobuf_LoadString) -> Bool {
     if lhs.value != rhs.value {return false}
+    if lhs._customName != rhs._customName {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -6314,9 +6358,7 @@ extension Fuzzilli_Protobuf_LoadString: SwiftProtobuf.Message, SwiftProtobuf._Me
 
 extension Fuzzilli_Protobuf_LoadBoolean: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".LoadBoolean"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "value"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}value\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -6460,10 +6502,7 @@ extension Fuzzilli_Protobuf_LoadAsyncDisposableVariable: SwiftProtobuf.Message, 
 
 extension Fuzzilli_Protobuf_LoadRegExp: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".LoadRegExp"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "pattern"),
-    2: .same(proto: "flags"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}pattern\0\u{1}flags\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -6517,9 +6556,7 @@ extension Fuzzilli_Protobuf_BeginObjectLiteral: SwiftProtobuf.Message, SwiftProt
 
 extension Fuzzilli_Protobuf_ObjectLiteralAddProperty: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ObjectLiteralAddProperty"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "propertyName"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}propertyName\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -6549,9 +6586,7 @@ extension Fuzzilli_Protobuf_ObjectLiteralAddProperty: SwiftProtobuf.Message, Swi
 
 extension Fuzzilli_Protobuf_ObjectLiteralAddElement: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ObjectLiteralAddElement"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "index"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}index\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -6638,10 +6673,7 @@ extension Fuzzilli_Protobuf_ObjectLiteralSetPrototype: SwiftProtobuf.Message, Sw
 
 extension Fuzzilli_Protobuf_BeginObjectLiteralMethod: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".BeginObjectLiteralMethod"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "methodName"),
-    2: .same(proto: "parameters"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}methodName\0\u{1}parameters\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -6699,9 +6731,7 @@ extension Fuzzilli_Protobuf_EndObjectLiteralMethod: SwiftProtobuf.Message, Swift
 
 extension Fuzzilli_Protobuf_BeginObjectLiteralComputedMethod: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".BeginObjectLiteralComputedMethod"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "parameters"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}parameters\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -6754,9 +6784,7 @@ extension Fuzzilli_Protobuf_EndObjectLiteralComputedMethod: SwiftProtobuf.Messag
 
 extension Fuzzilli_Protobuf_BeginObjectLiteralGetter: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".BeginObjectLiteralGetter"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "propertyName"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}propertyName\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -6805,9 +6833,7 @@ extension Fuzzilli_Protobuf_EndObjectLiteralGetter: SwiftProtobuf.Message, Swift
 
 extension Fuzzilli_Protobuf_BeginObjectLiteralSetter: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".BeginObjectLiteralSetter"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "propertyName"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}propertyName\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -6875,10 +6901,7 @@ extension Fuzzilli_Protobuf_EndObjectLiteral: SwiftProtobuf.Message, SwiftProtob
 
 extension Fuzzilli_Protobuf_BeginClassDefinition: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".BeginClassDefinition"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "hasSuperclass"),
-    2: .same(proto: "isExpression"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}hasSuperclass\0\u{1}isExpression\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -6913,9 +6936,7 @@ extension Fuzzilli_Protobuf_BeginClassDefinition: SwiftProtobuf.Message, SwiftPr
 
 extension Fuzzilli_Protobuf_BeginClassConstructor: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".BeginClassConstructor"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "parameters"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}parameters\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -6968,10 +6989,7 @@ extension Fuzzilli_Protobuf_EndClassConstructor: SwiftProtobuf.Message, SwiftPro
 
 extension Fuzzilli_Protobuf_ClassAddInstanceProperty: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ClassAddInstanceProperty"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "propertyName"),
-    2: .same(proto: "hasValue"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}propertyName\0\u{1}hasValue\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -7006,10 +7024,7 @@ extension Fuzzilli_Protobuf_ClassAddInstanceProperty: SwiftProtobuf.Message, Swi
 
 extension Fuzzilli_Protobuf_ClassAddInstanceElement: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ClassAddInstanceElement"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "index"),
-    2: .same(proto: "hasValue"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}index\0\u{1}hasValue\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -7044,9 +7059,7 @@ extension Fuzzilli_Protobuf_ClassAddInstanceElement: SwiftProtobuf.Message, Swif
 
 extension Fuzzilli_Protobuf_ClassAddInstanceComputedProperty: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ClassAddInstanceComputedProperty"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "hasValue"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}hasValue\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -7076,10 +7089,7 @@ extension Fuzzilli_Protobuf_ClassAddInstanceComputedProperty: SwiftProtobuf.Mess
 
 extension Fuzzilli_Protobuf_BeginClassInstanceMethod: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".BeginClassInstanceMethod"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "methodName"),
-    2: .same(proto: "parameters"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}methodName\0\u{1}parameters\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -7135,11 +7145,62 @@ extension Fuzzilli_Protobuf_EndClassInstanceMethod: SwiftProtobuf.Message, Swift
   }
 }
 
+extension Fuzzilli_Protobuf_BeginClassInstanceComputedMethod: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".BeginClassInstanceComputedMethod"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}parameters\0")
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularMessageField(value: &self._parameters) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    try { if let v = self._parameters {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
+    } }()
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Fuzzilli_Protobuf_BeginClassInstanceComputedMethod, rhs: Fuzzilli_Protobuf_BeginClassInstanceComputedMethod) -> Bool {
+    if lhs._parameters != rhs._parameters {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension Fuzzilli_Protobuf_EndClassInstanceComputedMethod: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".EndClassInstanceComputedMethod"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap()
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    // Load everything into unknown fields
+    while try decoder.nextFieldNumber() != nil {}
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Fuzzilli_Protobuf_EndClassInstanceComputedMethod, rhs: Fuzzilli_Protobuf_EndClassInstanceComputedMethod) -> Bool {
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
 extension Fuzzilli_Protobuf_BeginClassInstanceGetter: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".BeginClassInstanceGetter"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "propertyName"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}propertyName\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -7188,9 +7249,7 @@ extension Fuzzilli_Protobuf_EndClassInstanceGetter: SwiftProtobuf.Message, Swift
 
 extension Fuzzilli_Protobuf_BeginClassInstanceSetter: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".BeginClassInstanceSetter"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "propertyName"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}propertyName\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -7239,10 +7298,7 @@ extension Fuzzilli_Protobuf_EndClassInstanceSetter: SwiftProtobuf.Message, Swift
 
 extension Fuzzilli_Protobuf_ClassAddStaticProperty: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ClassAddStaticProperty"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "propertyName"),
-    2: .same(proto: "hasValue"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}propertyName\0\u{1}hasValue\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -7277,10 +7333,7 @@ extension Fuzzilli_Protobuf_ClassAddStaticProperty: SwiftProtobuf.Message, Swift
 
 extension Fuzzilli_Protobuf_ClassAddStaticElement: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ClassAddStaticElement"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "index"),
-    2: .same(proto: "hasValue"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}index\0\u{1}hasValue\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -7315,9 +7368,7 @@ extension Fuzzilli_Protobuf_ClassAddStaticElement: SwiftProtobuf.Message, SwiftP
 
 extension Fuzzilli_Protobuf_ClassAddStaticComputedProperty: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ClassAddStaticComputedProperty"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "hasValue"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}hasValue\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -7385,10 +7436,7 @@ extension Fuzzilli_Protobuf_EndClassStaticInitializer: SwiftProtobuf.Message, Sw
 
 extension Fuzzilli_Protobuf_BeginClassStaticMethod: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".BeginClassStaticMethod"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "methodName"),
-    2: .same(proto: "parameters"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}methodName\0\u{1}parameters\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -7444,11 +7492,62 @@ extension Fuzzilli_Protobuf_EndClassStaticMethod: SwiftProtobuf.Message, SwiftPr
   }
 }
 
+extension Fuzzilli_Protobuf_BeginClassStaticComputedMethod: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".BeginClassStaticComputedMethod"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}parameters\0")
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularMessageField(value: &self._parameters) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    try { if let v = self._parameters {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
+    } }()
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Fuzzilli_Protobuf_BeginClassStaticComputedMethod, rhs: Fuzzilli_Protobuf_BeginClassStaticComputedMethod) -> Bool {
+    if lhs._parameters != rhs._parameters {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension Fuzzilli_Protobuf_EndClassStaticComputedMethod: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".EndClassStaticComputedMethod"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap()
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    // Load everything into unknown fields
+    while try decoder.nextFieldNumber() != nil {}
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Fuzzilli_Protobuf_EndClassStaticComputedMethod, rhs: Fuzzilli_Protobuf_EndClassStaticComputedMethod) -> Bool {
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
 extension Fuzzilli_Protobuf_BeginClassStaticGetter: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".BeginClassStaticGetter"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "propertyName"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}propertyName\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -7497,9 +7596,7 @@ extension Fuzzilli_Protobuf_EndClassStaticGetter: SwiftProtobuf.Message, SwiftPr
 
 extension Fuzzilli_Protobuf_BeginClassStaticSetter: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".BeginClassStaticSetter"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "propertyName"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}propertyName\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -7548,10 +7645,7 @@ extension Fuzzilli_Protobuf_EndClassStaticSetter: SwiftProtobuf.Message, SwiftPr
 
 extension Fuzzilli_Protobuf_ClassAddPrivateInstanceProperty: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ClassAddPrivateInstanceProperty"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "propertyName"),
-    2: .same(proto: "hasValue"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}propertyName\0\u{1}hasValue\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -7586,10 +7680,7 @@ extension Fuzzilli_Protobuf_ClassAddPrivateInstanceProperty: SwiftProtobuf.Messa
 
 extension Fuzzilli_Protobuf_BeginClassPrivateInstanceMethod: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".BeginClassPrivateInstanceMethod"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "methodName"),
-    2: .same(proto: "parameters"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}methodName\0\u{1}parameters\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -7647,10 +7738,7 @@ extension Fuzzilli_Protobuf_EndClassPrivateInstanceMethod: SwiftProtobuf.Message
 
 extension Fuzzilli_Protobuf_ClassAddPrivateStaticProperty: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ClassAddPrivateStaticProperty"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "propertyName"),
-    2: .same(proto: "hasValue"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}propertyName\0\u{1}hasValue\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -7685,10 +7773,7 @@ extension Fuzzilli_Protobuf_ClassAddPrivateStaticProperty: SwiftProtobuf.Message
 
 extension Fuzzilli_Protobuf_BeginClassPrivateStaticMethod: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".BeginClassPrivateStaticMethod"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "methodName"),
-    2: .same(proto: "parameters"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}methodName\0\u{1}parameters\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -7784,9 +7869,7 @@ extension Fuzzilli_Protobuf_CreateArray: SwiftProtobuf.Message, SwiftProtobuf._M
 
 extension Fuzzilli_Protobuf_CreateIntArray: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".CreateIntArray"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "values"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}values\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -7816,9 +7899,7 @@ extension Fuzzilli_Protobuf_CreateIntArray: SwiftProtobuf.Message, SwiftProtobuf
 
 extension Fuzzilli_Protobuf_CreateFloatArray: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".CreateFloatArray"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "values"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}values\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -7848,9 +7929,7 @@ extension Fuzzilli_Protobuf_CreateFloatArray: SwiftProtobuf.Message, SwiftProtob
 
 extension Fuzzilli_Protobuf_CreateTemplateString: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".CreateTemplateString"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "parts"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}parts\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -7880,9 +7959,7 @@ extension Fuzzilli_Protobuf_CreateTemplateString: SwiftProtobuf.Message, SwiftPr
 
 extension Fuzzilli_Protobuf_CreateArrayWithSpread: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".CreateArrayWithSpread"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "spreads"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}spreads\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -7912,10 +7989,7 @@ extension Fuzzilli_Protobuf_CreateArrayWithSpread: SwiftProtobuf.Message, SwiftP
 
 extension Fuzzilli_Protobuf_GetProperty: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetProperty"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "propertyName"),
-    2: .same(proto: "isGuarded"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}propertyName\0\u{1}isGuarded\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -7950,9 +8024,7 @@ extension Fuzzilli_Protobuf_GetProperty: SwiftProtobuf.Message, SwiftProtobuf._M
 
 extension Fuzzilli_Protobuf_SetProperty: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".SetProperty"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "propertyName"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}propertyName\0\u{1}isGuarded\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -7961,6 +8033,7 @@ extension Fuzzilli_Protobuf_SetProperty: SwiftProtobuf.Message, SwiftProtobuf._M
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
       case 1: try { try decoder.decodeSingularStringField(value: &self.propertyName) }()
+      case 2: try { try decoder.decodeSingularBoolField(value: &self.isGuarded) }()
       default: break
       }
     }
@@ -7970,11 +8043,15 @@ extension Fuzzilli_Protobuf_SetProperty: SwiftProtobuf.Message, SwiftProtobuf._M
     if !self.propertyName.isEmpty {
       try visitor.visitSingularStringField(value: self.propertyName, fieldNumber: 1)
     }
+    if self.isGuarded != false {
+      try visitor.visitSingularBoolField(value: self.isGuarded, fieldNumber: 2)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
   public static func ==(lhs: Fuzzilli_Protobuf_SetProperty, rhs: Fuzzilli_Protobuf_SetProperty) -> Bool {
     if lhs.propertyName != rhs.propertyName {return false}
+    if lhs.isGuarded != rhs.isGuarded {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -7982,10 +8059,7 @@ extension Fuzzilli_Protobuf_SetProperty: SwiftProtobuf.Message, SwiftProtobuf._M
 
 extension Fuzzilli_Protobuf_UpdateProperty: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".UpdateProperty"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "propertyName"),
-    2: .same(proto: "op"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}propertyName\0\u{1}op\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -8020,10 +8094,7 @@ extension Fuzzilli_Protobuf_UpdateProperty: SwiftProtobuf.Message, SwiftProtobuf
 
 extension Fuzzilli_Protobuf_DeleteProperty: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".DeleteProperty"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "propertyName"),
-    2: .same(proto: "isGuarded"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}propertyName\0\u{1}isGuarded\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -8058,13 +8129,7 @@ extension Fuzzilli_Protobuf_DeleteProperty: SwiftProtobuf.Message, SwiftProtobuf
 
 extension Fuzzilli_Protobuf_ConfigureProperty: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ConfigureProperty"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "propertyName"),
-    2: .same(proto: "isWritable"),
-    3: .same(proto: "isConfigurable"),
-    4: .same(proto: "isEnumerable"),
-    5: .same(proto: "type"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}propertyName\0\u{1}isWritable\0\u{1}isConfigurable\0\u{1}isEnumerable\0\u{1}type\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -8114,10 +8179,7 @@ extension Fuzzilli_Protobuf_ConfigureProperty: SwiftProtobuf.Message, SwiftProto
 
 extension Fuzzilli_Protobuf_GetElement: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetElement"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "index"),
-    2: .same(proto: "isGuarded"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}index\0\u{1}isGuarded\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -8152,9 +8214,7 @@ extension Fuzzilli_Protobuf_GetElement: SwiftProtobuf.Message, SwiftProtobuf._Me
 
 extension Fuzzilli_Protobuf_SetElement: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".SetElement"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "index"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}index\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -8184,10 +8244,7 @@ extension Fuzzilli_Protobuf_SetElement: SwiftProtobuf.Message, SwiftProtobuf._Me
 
 extension Fuzzilli_Protobuf_UpdateElement: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".UpdateElement"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "index"),
-    2: .same(proto: "op"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}index\0\u{1}op\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -8222,10 +8279,7 @@ extension Fuzzilli_Protobuf_UpdateElement: SwiftProtobuf.Message, SwiftProtobuf.
 
 extension Fuzzilli_Protobuf_DeleteElement: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".DeleteElement"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "index"),
-    2: .same(proto: "isGuarded"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}index\0\u{1}isGuarded\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -8260,13 +8314,7 @@ extension Fuzzilli_Protobuf_DeleteElement: SwiftProtobuf.Message, SwiftProtobuf.
 
 extension Fuzzilli_Protobuf_ConfigureElement: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ConfigureElement"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "index"),
-    2: .same(proto: "isWritable"),
-    3: .same(proto: "isConfigurable"),
-    4: .same(proto: "isEnumerable"),
-    5: .same(proto: "type"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}index\0\u{1}isWritable\0\u{1}isConfigurable\0\u{1}isEnumerable\0\u{1}type\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -8316,9 +8364,7 @@ extension Fuzzilli_Protobuf_ConfigureElement: SwiftProtobuf.Message, SwiftProtob
 
 extension Fuzzilli_Protobuf_GetComputedProperty: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetComputedProperty"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "isGuarded"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}isGuarded\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -8367,9 +8413,7 @@ extension Fuzzilli_Protobuf_SetComputedProperty: SwiftProtobuf.Message, SwiftPro
 
 extension Fuzzilli_Protobuf_UpdateComputedProperty: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".UpdateComputedProperty"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "op"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}op\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -8399,9 +8443,7 @@ extension Fuzzilli_Protobuf_UpdateComputedProperty: SwiftProtobuf.Message, Swift
 
 extension Fuzzilli_Protobuf_DeleteComputedProperty: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".DeleteComputedProperty"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "isGuarded"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}isGuarded\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -8431,12 +8473,7 @@ extension Fuzzilli_Protobuf_DeleteComputedProperty: SwiftProtobuf.Message, Swift
 
 extension Fuzzilli_Protobuf_ConfigureComputedProperty: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ConfigureComputedProperty"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "isWritable"),
-    2: .same(proto: "isConfigurable"),
-    3: .same(proto: "isEnumerable"),
-    4: .same(proto: "type"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}isWritable\0\u{1}isConfigurable\0\u{1}isEnumerable\0\u{1}type\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -8557,10 +8594,7 @@ extension Fuzzilli_Protobuf_TestIn: SwiftProtobuf.Message, SwiftProtobuf._Messag
 
 extension Fuzzilli_Protobuf_BeginPlainFunction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".BeginPlainFunction"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "parameters"),
-    2: .same(proto: "name"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}parameters\0\u{1}name\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -8618,9 +8652,7 @@ extension Fuzzilli_Protobuf_EndPlainFunction: SwiftProtobuf.Message, SwiftProtob
 
 extension Fuzzilli_Protobuf_BeginArrowFunction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".BeginArrowFunction"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "parameters"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}parameters\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -8673,10 +8705,7 @@ extension Fuzzilli_Protobuf_EndArrowFunction: SwiftProtobuf.Message, SwiftProtob
 
 extension Fuzzilli_Protobuf_BeginGeneratorFunction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".BeginGeneratorFunction"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "parameters"),
-    2: .same(proto: "name"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}parameters\0\u{1}name\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -8734,10 +8763,7 @@ extension Fuzzilli_Protobuf_EndGeneratorFunction: SwiftProtobuf.Message, SwiftPr
 
 extension Fuzzilli_Protobuf_BeginAsyncFunction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".BeginAsyncFunction"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "parameters"),
-    2: .same(proto: "name"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}parameters\0\u{1}name\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -8795,9 +8821,7 @@ extension Fuzzilli_Protobuf_EndAsyncFunction: SwiftProtobuf.Message, SwiftProtob
 
 extension Fuzzilli_Protobuf_BeginAsyncArrowFunction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".BeginAsyncArrowFunction"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "parameters"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}parameters\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -8850,10 +8874,7 @@ extension Fuzzilli_Protobuf_EndAsyncArrowFunction: SwiftProtobuf.Message, SwiftP
 
 extension Fuzzilli_Protobuf_BeginAsyncGeneratorFunction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".BeginAsyncGeneratorFunction"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "parameters"),
-    2: .same(proto: "name"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}parameters\0\u{1}name\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -8911,9 +8932,7 @@ extension Fuzzilli_Protobuf_EndAsyncGeneratorFunction: SwiftProtobuf.Message, Sw
 
 extension Fuzzilli_Protobuf_BeginConstructor: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".BeginConstructor"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "parameters"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}parameters\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -8966,9 +8985,7 @@ extension Fuzzilli_Protobuf_EndConstructor: SwiftProtobuf.Message, SwiftProtobuf
 
 extension Fuzzilli_Protobuf_Directive: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".Directive"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "content"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}content\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -9074,9 +9091,7 @@ extension Fuzzilli_Protobuf_Await: SwiftProtobuf.Message, SwiftProtobuf._Message
 
 extension Fuzzilli_Protobuf_CallFunction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".CallFunction"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "isGuarded"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}isGuarded\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -9106,10 +9121,7 @@ extension Fuzzilli_Protobuf_CallFunction: SwiftProtobuf.Message, SwiftProtobuf._
 
 extension Fuzzilli_Protobuf_CallFunctionWithSpread: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".CallFunctionWithSpread"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "spreads"),
-    2: .same(proto: "isGuarded"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}spreads\0\u{1}isGuarded\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -9144,9 +9156,7 @@ extension Fuzzilli_Protobuf_CallFunctionWithSpread: SwiftProtobuf.Message, Swift
 
 extension Fuzzilli_Protobuf_Construct: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".Construct"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "isGuarded"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}isGuarded\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -9176,10 +9186,7 @@ extension Fuzzilli_Protobuf_Construct: SwiftProtobuf.Message, SwiftProtobuf._Mes
 
 extension Fuzzilli_Protobuf_ConstructWithSpread: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ConstructWithSpread"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "spreads"),
-    2: .same(proto: "isGuarded"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}spreads\0\u{1}isGuarded\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -9214,10 +9221,7 @@ extension Fuzzilli_Protobuf_ConstructWithSpread: SwiftProtobuf.Message, SwiftPro
 
 extension Fuzzilli_Protobuf_CallMethod: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".CallMethod"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "methodName"),
-    2: .same(proto: "isGuarded"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}methodName\0\u{1}isGuarded\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -9252,11 +9256,7 @@ extension Fuzzilli_Protobuf_CallMethod: SwiftProtobuf.Message, SwiftProtobuf._Me
 
 extension Fuzzilli_Protobuf_CallMethodWithSpread: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".CallMethodWithSpread"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "methodName"),
-    2: .same(proto: "spreads"),
-    3: .same(proto: "isGuarded"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}methodName\0\u{1}spreads\0\u{1}isGuarded\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -9296,9 +9296,7 @@ extension Fuzzilli_Protobuf_CallMethodWithSpread: SwiftProtobuf.Message, SwiftPr
 
 extension Fuzzilli_Protobuf_CallComputedMethod: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".CallComputedMethod"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "isGuarded"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}isGuarded\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -9328,10 +9326,7 @@ extension Fuzzilli_Protobuf_CallComputedMethod: SwiftProtobuf.Message, SwiftProt
 
 extension Fuzzilli_Protobuf_CallComputedMethodWithSpread: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".CallComputedMethodWithSpread"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "spreads"),
-    2: .same(proto: "isGuarded"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}spreads\0\u{1}isGuarded\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -9366,9 +9361,7 @@ extension Fuzzilli_Protobuf_CallComputedMethodWithSpread: SwiftProtobuf.Message,
 
 extension Fuzzilli_Protobuf_UnaryOperation: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".UnaryOperation"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "op"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}op\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -9398,9 +9391,7 @@ extension Fuzzilli_Protobuf_UnaryOperation: SwiftProtobuf.Message, SwiftProtobuf
 
 extension Fuzzilli_Protobuf_BinaryOperation: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".BinaryOperation"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "op"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}op\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -9449,9 +9440,7 @@ extension Fuzzilli_Protobuf_TernaryOperation: SwiftProtobuf.Message, SwiftProtob
 
 extension Fuzzilli_Protobuf_Update: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".Update"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "op"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}op\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -9519,10 +9508,7 @@ extension Fuzzilli_Protobuf_Reassign: SwiftProtobuf.Message, SwiftProtobuf._Mess
 
 extension Fuzzilli_Protobuf_DestructArray: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".DestructArray"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "indices"),
-    2: .same(proto: "lastIsRest"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}indices\0\u{1}lastIsRest\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -9557,10 +9543,7 @@ extension Fuzzilli_Protobuf_DestructArray: SwiftProtobuf.Message, SwiftProtobuf.
 
 extension Fuzzilli_Protobuf_DestructArrayAndReassign: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".DestructArrayAndReassign"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "indices"),
-    2: .same(proto: "lastIsRest"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}indices\0\u{1}lastIsRest\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -9595,10 +9578,7 @@ extension Fuzzilli_Protobuf_DestructArrayAndReassign: SwiftProtobuf.Message, Swi
 
 extension Fuzzilli_Protobuf_DestructObject: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".DestructObject"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "properties"),
-    2: .same(proto: "hasRestElement"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}properties\0\u{1}hasRestElement\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -9633,10 +9613,7 @@ extension Fuzzilli_Protobuf_DestructObject: SwiftProtobuf.Message, SwiftProtobuf
 
 extension Fuzzilli_Protobuf_DestructObjectAndReassign: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".DestructObjectAndReassign"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "properties"),
-    2: .same(proto: "hasRestElement"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}properties\0\u{1}hasRestElement\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -9671,9 +9648,7 @@ extension Fuzzilli_Protobuf_DestructObjectAndReassign: SwiftProtobuf.Message, Sw
 
 extension Fuzzilli_Protobuf_Compare: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".Compare"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "op"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}op\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -9703,10 +9678,7 @@ extension Fuzzilli_Protobuf_Compare: SwiftProtobuf.Message, SwiftProtobuf._Messa
 
 extension Fuzzilli_Protobuf_CreateNamedVariable: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".CreateNamedVariable"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "variableName"),
-    2: .same(proto: "declarationMode"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}variableName\0\u{1}declarationMode\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -9739,12 +9711,69 @@ extension Fuzzilli_Protobuf_CreateNamedVariable: SwiftProtobuf.Message, SwiftPro
   }
 }
 
+extension Fuzzilli_Protobuf_CreateNamedDisposableVariable: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".CreateNamedDisposableVariable"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}variableName\0")
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularStringField(value: &self.variableName) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if !self.variableName.isEmpty {
+      try visitor.visitSingularStringField(value: self.variableName, fieldNumber: 1)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Fuzzilli_Protobuf_CreateNamedDisposableVariable, rhs: Fuzzilli_Protobuf_CreateNamedDisposableVariable) -> Bool {
+    if lhs.variableName != rhs.variableName {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension Fuzzilli_Protobuf_CreateNamedAsyncDisposableVariable: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".CreateNamedAsyncDisposableVariable"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}variableName\0")
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularStringField(value: &self.variableName) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if !self.variableName.isEmpty {
+      try visitor.visitSingularStringField(value: self.variableName, fieldNumber: 1)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Fuzzilli_Protobuf_CreateNamedAsyncDisposableVariable, rhs: Fuzzilli_Protobuf_CreateNamedAsyncDisposableVariable) -> Bool {
+    if lhs.variableName != rhs.variableName {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
 extension Fuzzilli_Protobuf_Eval: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".Eval"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "code"),
-    2: .same(proto: "hasOutput"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}code\0\u{1}hasOutput\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -9779,9 +9808,7 @@ extension Fuzzilli_Protobuf_Eval: SwiftProtobuf.Message, SwiftProtobuf._MessageI
 
 extension Fuzzilli_Protobuf_CallSuperConstructor: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".CallSuperConstructor"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "spreads"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}spreads\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -9811,9 +9838,7 @@ extension Fuzzilli_Protobuf_CallSuperConstructor: SwiftProtobuf.Message, SwiftPr
 
 extension Fuzzilli_Protobuf_CallSuperMethod: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".CallSuperMethod"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "methodName"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}methodName\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -9843,9 +9868,7 @@ extension Fuzzilli_Protobuf_CallSuperMethod: SwiftProtobuf.Message, SwiftProtobu
 
 extension Fuzzilli_Protobuf_GetPrivateProperty: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetPrivateProperty"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "propertyName"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}propertyName\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -9875,9 +9898,7 @@ extension Fuzzilli_Protobuf_GetPrivateProperty: SwiftProtobuf.Message, SwiftProt
 
 extension Fuzzilli_Protobuf_SetPrivateProperty: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".SetPrivateProperty"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "propertyName"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}propertyName\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -9907,10 +9928,7 @@ extension Fuzzilli_Protobuf_SetPrivateProperty: SwiftProtobuf.Message, SwiftProt
 
 extension Fuzzilli_Protobuf_UpdatePrivateProperty: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".UpdatePrivateProperty"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "propertyName"),
-    2: .same(proto: "op"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}propertyName\0\u{1}op\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -9945,9 +9963,7 @@ extension Fuzzilli_Protobuf_UpdatePrivateProperty: SwiftProtobuf.Message, SwiftP
 
 extension Fuzzilli_Protobuf_CallPrivateMethod: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".CallPrivateMethod"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "methodName"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}methodName\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -9977,9 +9993,7 @@ extension Fuzzilli_Protobuf_CallPrivateMethod: SwiftProtobuf.Message, SwiftProto
 
 extension Fuzzilli_Protobuf_GetSuperProperty: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetSuperProperty"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "propertyName"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}propertyName\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -10009,9 +10023,7 @@ extension Fuzzilli_Protobuf_GetSuperProperty: SwiftProtobuf.Message, SwiftProtob
 
 extension Fuzzilli_Protobuf_SetSuperProperty: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".SetSuperProperty"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "propertyName"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}propertyName\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -10079,10 +10091,7 @@ extension Fuzzilli_Protobuf_SetComputedSuperProperty: SwiftProtobuf.Message, Swi
 
 extension Fuzzilli_Protobuf_UpdateSuperProperty: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".UpdateSuperProperty"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "propertyName"),
-    2: .same(proto: "op"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}propertyName\0\u{1}op\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -10136,10 +10145,7 @@ extension Fuzzilli_Protobuf_LoadNewTarget: SwiftProtobuf.Message, SwiftProtobuf.
 
 extension Fuzzilli_Protobuf_Explore: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".Explore"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "id"),
-    2: .same(proto: "rngSeed"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}id\0\u{1}rngSeed\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -10174,9 +10180,7 @@ extension Fuzzilli_Protobuf_Explore: SwiftProtobuf.Message, SwiftProtobuf._Messa
 
 extension Fuzzilli_Protobuf_Probe: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".Probe"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "id"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}id\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -10206,12 +10210,7 @@ extension Fuzzilli_Protobuf_Probe: SwiftProtobuf.Message, SwiftProtobuf._Message
 
 extension Fuzzilli_Protobuf_Fixup: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".Fixup"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "id"),
-    2: .same(proto: "action"),
-    3: .same(proto: "originalOperation"),
-    4: .same(proto: "hasOutput"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}id\0\u{1}action\0\u{1}originalOperation\0\u{1}hasOutput\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -10294,9 +10293,7 @@ extension Fuzzilli_Protobuf_EndWith: SwiftProtobuf.Message, SwiftProtobuf._Messa
 
 extension Fuzzilli_Protobuf_BeginIf: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".BeginIf"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "inverted"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}inverted\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -10440,9 +10437,7 @@ extension Fuzzilli_Protobuf_SwitchBreak: SwiftProtobuf.Message, SwiftProtobuf._M
 
 extension Fuzzilli_Protobuf_EndSwitchCase: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".EndSwitchCase"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "fallsThrough"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}fallsThrough\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -10757,10 +10752,7 @@ extension Fuzzilli_Protobuf_BeginForOfLoop: SwiftProtobuf.Message, SwiftProtobuf
 
 extension Fuzzilli_Protobuf_BeginForOfLoopWithDestruct: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".BeginForOfLoopWithDestruct"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "indices"),
-    2: .same(proto: "hasRestElement"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}indices\0\u{1}hasRestElement\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -10814,10 +10806,7 @@ extension Fuzzilli_Protobuf_EndForOfLoop: SwiftProtobuf.Message, SwiftProtobuf._
 
 extension Fuzzilli_Protobuf_BeginRepeatLoop: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".BeginRepeatLoop"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "iterations"),
-    2: .same(proto: "exposesLoopCounter"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}iterations\0\u{1}exposesLoopCounter\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -11156,9 +11145,7 @@ extension Fuzzilli_Protobuf_EndWasmModule: SwiftProtobuf.Message, SwiftProtobuf.
 
 extension Fuzzilli_Protobuf_CreateWasmGlobal: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".CreateWasmGlobal"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "wasmGlobal"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}wasmGlobal\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -11192,9 +11179,7 @@ extension Fuzzilli_Protobuf_CreateWasmGlobal: SwiftProtobuf.Message, SwiftProtob
 
 extension Fuzzilli_Protobuf_CreateWasmMemory: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".CreateWasmMemory"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "wasmMemory"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}wasmMemory\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -11228,12 +11213,7 @@ extension Fuzzilli_Protobuf_CreateWasmMemory: SwiftProtobuf.Message, SwiftProtob
 
 extension Fuzzilli_Protobuf_CreateWasmTable: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".CreateWasmTable"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "elementType"),
-    2: .same(proto: "minSize"),
-    3: .same(proto: "maxSize"),
-    4: .same(proto: "isTable64"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}elementType\0\u{1}minSize\0\u{1}maxSize\0\u{1}isTable64\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -11301,9 +11281,7 @@ extension Fuzzilli_Protobuf_CreateWasmJSTag: SwiftProtobuf.Message, SwiftProtobu
 
 extension Fuzzilli_Protobuf_CreateWasmTag: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".CreateWasmTag"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "parameterTypes"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}parameterTypes\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -11371,9 +11349,7 @@ extension Fuzzilli_Protobuf_WrapPromising: SwiftProtobuf.Message, SwiftProtobuf.
 
 extension Fuzzilli_Protobuf_BindMethod: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".BindMethod"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "methodName"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}methodName\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -11422,9 +11398,7 @@ extension Fuzzilli_Protobuf_BindFunction: SwiftProtobuf.Message, SwiftProtobuf._
 
 extension Fuzzilli_Protobuf_Consti64: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".Consti64"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "value"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}value\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -11454,9 +11428,7 @@ extension Fuzzilli_Protobuf_Consti64: SwiftProtobuf.Message, SwiftProtobuf._Mess
 
 extension Fuzzilli_Protobuf_Consti32: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".Consti32"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "value"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}value\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -11486,9 +11458,7 @@ extension Fuzzilli_Protobuf_Consti32: SwiftProtobuf.Message, SwiftProtobuf._Mess
 
 extension Fuzzilli_Protobuf_Constf32: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".Constf32"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "value"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}value\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -11518,9 +11488,7 @@ extension Fuzzilli_Protobuf_Constf32: SwiftProtobuf.Message, SwiftProtobuf._Mess
 
 extension Fuzzilli_Protobuf_Constf64: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".Constf64"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "value"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}value\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -11550,9 +11518,7 @@ extension Fuzzilli_Protobuf_Constf64: SwiftProtobuf.Message, SwiftProtobuf._Mess
 
 extension Fuzzilli_Protobuf_WasmReturn: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".WasmReturn"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "returnTypes"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}returnTypes\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -11582,10 +11548,7 @@ extension Fuzzilli_Protobuf_WasmReturn: SwiftProtobuf.Message, SwiftProtobuf._Me
 
 extension Fuzzilli_Protobuf_WasmReferenceType: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".WasmReferenceType"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "kind"),
-    2: .same(proto: "nullability"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}kind\0\u{1}nullability\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -11620,10 +11583,7 @@ extension Fuzzilli_Protobuf_WasmReferenceType: SwiftProtobuf.Message, SwiftProto
 
 extension Fuzzilli_Protobuf_WasmILType: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".WasmILType"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "valueType"),
-    2: .same(proto: "refType"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}valueType\0\u{1}refType\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -11685,10 +11645,7 @@ extension Fuzzilli_Protobuf_WasmILType: SwiftProtobuf.Message, SwiftProtobuf._Me
 
 extension Fuzzilli_Protobuf_BeginWasmFunction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".BeginWasmFunction"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "parameterTypes"),
-    2: .same(proto: "outputTypes"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}parameterTypes\0\u{1}outputTypes\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -11723,10 +11680,7 @@ extension Fuzzilli_Protobuf_BeginWasmFunction: SwiftProtobuf.Message, SwiftProto
 
 extension Fuzzilli_Protobuf_EndWasmFunction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".EndWasmFunction"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "parameterTypes"),
-    2: .same(proto: "outputTypes"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}parameterTypes\0\u{1}outputTypes\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -11761,10 +11715,7 @@ extension Fuzzilli_Protobuf_EndWasmFunction: SwiftProtobuf.Message, SwiftProtobu
 
 extension Fuzzilli_Protobuf_WasmJsCall: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".WasmJsCall"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "parameterTypes"),
-    2: .same(proto: "outputTypes"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}parameterTypes\0\u{1}outputTypes\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -11799,9 +11750,7 @@ extension Fuzzilli_Protobuf_WasmJsCall: SwiftProtobuf.Message, SwiftProtobuf._Me
 
 extension Fuzzilli_Protobuf_Wasmi32CompareOp: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".Wasmi32CompareOp"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "compareOperator"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}compareOperator\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -11831,9 +11780,7 @@ extension Fuzzilli_Protobuf_Wasmi32CompareOp: SwiftProtobuf.Message, SwiftProtob
 
 extension Fuzzilli_Protobuf_Wasmi64CompareOp: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".Wasmi64CompareOp"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "compareOperator"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}compareOperator\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -11863,9 +11810,7 @@ extension Fuzzilli_Protobuf_Wasmi64CompareOp: SwiftProtobuf.Message, SwiftProtob
 
 extension Fuzzilli_Protobuf_Wasmf32CompareOp: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".Wasmf32CompareOp"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "compareOperator"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}compareOperator\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -11895,9 +11840,7 @@ extension Fuzzilli_Protobuf_Wasmf32CompareOp: SwiftProtobuf.Message, SwiftProtob
 
 extension Fuzzilli_Protobuf_Wasmf64CompareOp: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".Wasmf64CompareOp"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "compareOperator"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}compareOperator\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -11927,9 +11870,7 @@ extension Fuzzilli_Protobuf_Wasmf64CompareOp: SwiftProtobuf.Message, SwiftProtob
 
 extension Fuzzilli_Protobuf_Wasmi64BinOp: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".Wasmi64BinOp"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "op"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}op\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -11959,9 +11900,7 @@ extension Fuzzilli_Protobuf_Wasmi64BinOp: SwiftProtobuf.Message, SwiftProtobuf._
 
 extension Fuzzilli_Protobuf_Wasmi32BinOp: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".Wasmi32BinOp"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "op"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}op\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -11991,9 +11930,7 @@ extension Fuzzilli_Protobuf_Wasmi32BinOp: SwiftProtobuf.Message, SwiftProtobuf._
 
 extension Fuzzilli_Protobuf_Wasmi64UnOp: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".Wasmi64UnOp"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "op"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}op\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -12023,9 +11960,7 @@ extension Fuzzilli_Protobuf_Wasmi64UnOp: SwiftProtobuf.Message, SwiftProtobuf._M
 
 extension Fuzzilli_Protobuf_Wasmi32UnOp: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".Wasmi32UnOp"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "op"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}op\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -12055,9 +11990,7 @@ extension Fuzzilli_Protobuf_Wasmi32UnOp: SwiftProtobuf.Message, SwiftProtobuf._M
 
 extension Fuzzilli_Protobuf_Wasmf64BinOp: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".Wasmf64BinOp"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "op"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}op\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -12087,9 +12020,7 @@ extension Fuzzilli_Protobuf_Wasmf64BinOp: SwiftProtobuf.Message, SwiftProtobuf._
 
 extension Fuzzilli_Protobuf_Wasmf32BinOp: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".Wasmf32BinOp"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "op"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}op\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -12119,9 +12050,7 @@ extension Fuzzilli_Protobuf_Wasmf32BinOp: SwiftProtobuf.Message, SwiftProtobuf._
 
 extension Fuzzilli_Protobuf_Wasmf64UnOp: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".Wasmf64UnOp"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "op"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}op\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -12151,9 +12080,7 @@ extension Fuzzilli_Protobuf_Wasmf64UnOp: SwiftProtobuf.Message, SwiftProtobuf._M
 
 extension Fuzzilli_Protobuf_Wasmf32UnOp: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".Wasmf32UnOp"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "op"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}op\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -12240,9 +12167,7 @@ extension Fuzzilli_Protobuf_WasmWrapi64Toi32: SwiftProtobuf.Message, SwiftProtob
 
 extension Fuzzilli_Protobuf_WasmTruncatef32Toi32: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".WasmTruncatef32Toi32"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "isSigned"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}isSigned\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -12272,9 +12197,7 @@ extension Fuzzilli_Protobuf_WasmTruncatef32Toi32: SwiftProtobuf.Message, SwiftPr
 
 extension Fuzzilli_Protobuf_WasmTruncatef64Toi32: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".WasmTruncatef64Toi32"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "isSigned"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}isSigned\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -12304,9 +12227,7 @@ extension Fuzzilli_Protobuf_WasmTruncatef64Toi32: SwiftProtobuf.Message, SwiftPr
 
 extension Fuzzilli_Protobuf_WasmExtendi32Toi64: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".WasmExtendi32Toi64"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "isSigned"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}isSigned\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -12336,9 +12257,7 @@ extension Fuzzilli_Protobuf_WasmExtendi32Toi64: SwiftProtobuf.Message, SwiftProt
 
 extension Fuzzilli_Protobuf_WasmTruncatef32Toi64: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".WasmTruncatef32Toi64"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "isSigned"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}isSigned\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -12368,9 +12287,7 @@ extension Fuzzilli_Protobuf_WasmTruncatef32Toi64: SwiftProtobuf.Message, SwiftPr
 
 extension Fuzzilli_Protobuf_WasmTruncatef64Toi64: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".WasmTruncatef64Toi64"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "isSigned"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}isSigned\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -12400,9 +12317,7 @@ extension Fuzzilli_Protobuf_WasmTruncatef64Toi64: SwiftProtobuf.Message, SwiftPr
 
 extension Fuzzilli_Protobuf_WasmConverti32Tof32: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".WasmConverti32Tof32"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "isSigned"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}isSigned\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -12432,9 +12347,7 @@ extension Fuzzilli_Protobuf_WasmConverti32Tof32: SwiftProtobuf.Message, SwiftPro
 
 extension Fuzzilli_Protobuf_WasmTruncatei64Tof32: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".WasmTruncatei64Tof32"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "isSigned"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}isSigned\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -12483,9 +12396,7 @@ extension Fuzzilli_Protobuf_WasmDemotef64Tof32: SwiftProtobuf.Message, SwiftProt
 
 extension Fuzzilli_Protobuf_WasmConverti32Tof64: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".WasmConverti32Tof64"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "isSigned"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}isSigned\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -12515,9 +12426,7 @@ extension Fuzzilli_Protobuf_WasmConverti32Tof64: SwiftProtobuf.Message, SwiftPro
 
 extension Fuzzilli_Protobuf_WasmConverti64Tof64: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".WasmConverti64Tof64"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "isSigned"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}isSigned\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -12547,9 +12456,7 @@ extension Fuzzilli_Protobuf_WasmConverti64Tof64: SwiftProtobuf.Message, SwiftPro
 
 extension Fuzzilli_Protobuf_WasmConverti64Tof32: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".WasmConverti64Tof32"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "isSigned"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}isSigned\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -12769,9 +12676,7 @@ extension Fuzzilli_Protobuf_WasmSignExtend32Intoi64: SwiftProtobuf.Message, Swif
 
 extension Fuzzilli_Protobuf_WasmTruncateSatf32Toi32: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".WasmTruncateSatf32Toi32"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "isSigned"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}isSigned\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -12801,9 +12706,7 @@ extension Fuzzilli_Protobuf_WasmTruncateSatf32Toi32: SwiftProtobuf.Message, Swif
 
 extension Fuzzilli_Protobuf_WasmTruncateSatf64Toi32: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".WasmTruncateSatf64Toi32"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "isSigned"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}isSigned\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -12833,9 +12736,7 @@ extension Fuzzilli_Protobuf_WasmTruncateSatf64Toi32: SwiftProtobuf.Message, Swif
 
 extension Fuzzilli_Protobuf_WasmTruncateSatf32Toi64: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".WasmTruncateSatf32Toi64"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "isSigned"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}isSigned\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -12865,9 +12766,7 @@ extension Fuzzilli_Protobuf_WasmTruncateSatf32Toi64: SwiftProtobuf.Message, Swif
 
 extension Fuzzilli_Protobuf_WasmTruncateSatf64Toi64: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".WasmTruncateSatf64Toi64"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "isSigned"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}isSigned\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -12897,16 +12796,7 @@ extension Fuzzilli_Protobuf_WasmTruncateSatf64Toi64: SwiftProtobuf.Message, Swif
 
 extension Fuzzilli_Protobuf_WasmGlobal: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".WasmGlobal"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "isMutable"),
-    2: .same(proto: "valuei32"),
-    3: .same(proto: "valuei64"),
-    4: .same(proto: "valuef32"),
-    5: .same(proto: "valuef64"),
-    6: .same(proto: "nullref"),
-    7: .same(proto: "funcref"),
-    8: .same(proto: "imported"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}isMutable\0\u{1}valuei32\0\u{1}valuei64\0\u{1}valuef32\0\u{1}valuef64\0\u{1}nullref\0\u{1}funcref\0\u{1}imported\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -13033,12 +12923,7 @@ extension Fuzzilli_Protobuf_WasmGlobal: SwiftProtobuf.Message, SwiftProtobuf._Me
 
 extension Fuzzilli_Protobuf_WasmMemory: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".WasmMemory"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "minPages"),
-    2: .same(proto: "maxPages"),
-    3: .same(proto: "isShared"),
-    4: .same(proto: "isMemory64"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}minPages\0\u{1}maxPages\0\u{1}isShared\0\u{1}isMemory64\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -13087,9 +12972,7 @@ extension Fuzzilli_Protobuf_WasmMemory: SwiftProtobuf.Message, SwiftProtobuf._Me
 
 extension Fuzzilli_Protobuf_WasmDefineGlobal: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".WasmDefineGlobal"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "wasmGlobal"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}wasmGlobal\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -13123,10 +13006,7 @@ extension Fuzzilli_Protobuf_WasmDefineGlobal: SwiftProtobuf.Message, SwiftProtob
 
 extension Fuzzilli_Protobuf_WasmSignature: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".WasmSignature"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "parameterTypes"),
-    2: .same(proto: "outputTypes"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}parameterTypes\0\u{1}outputTypes\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -13161,10 +13041,7 @@ extension Fuzzilli_Protobuf_WasmSignature: SwiftProtobuf.Message, SwiftProtobuf.
 
 extension Fuzzilli_Protobuf_IndexedWasmSignature: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".IndexedWasmSignature"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "index"),
-    2: .same(proto: "signature"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}index\0\u{1}signature\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -13203,13 +13080,7 @@ extension Fuzzilli_Protobuf_IndexedWasmSignature: SwiftProtobuf.Message, SwiftPr
 
 extension Fuzzilli_Protobuf_WasmDefineTable: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".WasmDefineTable"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "elementType"),
-    2: .same(proto: "minSize"),
-    3: .same(proto: "maxSize"),
-    4: .same(proto: "definedEntries"),
-    5: .same(proto: "isTable64"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}elementType\0\u{1}minSize\0\u{1}maxSize\0\u{1}definedEntries\0\u{1}isTable64\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -13263,9 +13134,7 @@ extension Fuzzilli_Protobuf_WasmDefineTable: SwiftProtobuf.Message, SwiftProtobu
 
 extension Fuzzilli_Protobuf_WasmDefineMemory: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".WasmDefineMemory"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "wasmMemory"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}wasmMemory\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -13299,9 +13168,7 @@ extension Fuzzilli_Protobuf_WasmDefineMemory: SwiftProtobuf.Message, SwiftProtob
 
 extension Fuzzilli_Protobuf_WasmLoadGlobal: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".WasmLoadGlobal"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    2: .same(proto: "globalType"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\u{2}globalType\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -13335,9 +13202,7 @@ extension Fuzzilli_Protobuf_WasmLoadGlobal: SwiftProtobuf.Message, SwiftProtobuf
 
 extension Fuzzilli_Protobuf_WasmStoreGlobal: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".WasmStoreGlobal"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    2: .same(proto: "globalType"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\u{2}globalType\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -13371,12 +13236,7 @@ extension Fuzzilli_Protobuf_WasmStoreGlobal: SwiftProtobuf.Message, SwiftProtobu
 
 extension Fuzzilli_Protobuf_WasmTableGet: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".WasmTableGet"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "elementType"),
-    2: .same(proto: "minSize"),
-    3: .same(proto: "maxSize"),
-    4: .same(proto: "isTable64"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}elementType\0\u{1}minSize\0\u{1}maxSize\0\u{1}isTable64\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -13425,12 +13285,7 @@ extension Fuzzilli_Protobuf_WasmTableGet: SwiftProtobuf.Message, SwiftProtobuf._
 
 extension Fuzzilli_Protobuf_WasmTableSet: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".WasmTableSet"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "elementType"),
-    2: .same(proto: "minSize"),
-    3: .same(proto: "maxSize"),
-    4: .same(proto: "isTable64"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}elementType\0\u{1}minSize\0\u{1}maxSize\0\u{1}isTable64\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -13477,12 +13332,47 @@ extension Fuzzilli_Protobuf_WasmTableSet: SwiftProtobuf.Message, SwiftProtobuf._
   }
 }
 
+extension Fuzzilli_Protobuf_WasmTableSize: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".WasmTableSize"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap()
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    // Load everything into unknown fields
+    while try decoder.nextFieldNumber() != nil {}
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Fuzzilli_Protobuf_WasmTableSize, rhs: Fuzzilli_Protobuf_WasmTableSize) -> Bool {
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension Fuzzilli_Protobuf_WasmTableGrow: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".WasmTableGrow"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap()
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    // Load everything into unknown fields
+    while try decoder.nextFieldNumber() != nil {}
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Fuzzilli_Protobuf_WasmTableGrow, rhs: Fuzzilli_Protobuf_WasmTableGrow) -> Bool {
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
 extension Fuzzilli_Protobuf_WasmCallIndirect: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".WasmCallIndirect"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "parameterTypes"),
-    2: .same(proto: "outputTypes"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}parameterTypes\0\u{1}outputTypes\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -13517,10 +13407,7 @@ extension Fuzzilli_Protobuf_WasmCallIndirect: SwiftProtobuf.Message, SwiftProtob
 
 extension Fuzzilli_Protobuf_WasmCallDirect: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".WasmCallDirect"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "parameterTypes"),
-    2: .same(proto: "outputTypes"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}parameterTypes\0\u{1}outputTypes\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -13555,10 +13442,7 @@ extension Fuzzilli_Protobuf_WasmCallDirect: SwiftProtobuf.Message, SwiftProtobuf
 
 extension Fuzzilli_Protobuf_WasmReturnCallDirect: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".WasmReturnCallDirect"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "parameterTypes"),
-    2: .same(proto: "outputTypes"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}parameterTypes\0\u{1}outputTypes\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -13593,10 +13477,7 @@ extension Fuzzilli_Protobuf_WasmReturnCallDirect: SwiftProtobuf.Message, SwiftPr
 
 extension Fuzzilli_Protobuf_WasmReturnCallIndirect: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".WasmReturnCallIndirect"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "parameterTypes"),
-    2: .same(proto: "outputTypes"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}parameterTypes\0\u{1}outputTypes\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -13631,10 +13512,7 @@ extension Fuzzilli_Protobuf_WasmReturnCallIndirect: SwiftProtobuf.Message, Swift
 
 extension Fuzzilli_Protobuf_WasmMemoryLoad: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".WasmMemoryLoad"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "loadType"),
-    2: .same(proto: "staticOffset"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}loadType\0\u{1}staticOffset\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -13669,10 +13547,7 @@ extension Fuzzilli_Protobuf_WasmMemoryLoad: SwiftProtobuf.Message, SwiftProtobuf
 
 extension Fuzzilli_Protobuf_WasmMemoryStore: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".WasmMemoryStore"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "storeType"),
-    2: .same(proto: "staticOffset"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}storeType\0\u{1}staticOffset\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -13764,10 +13639,7 @@ extension Fuzzilli_Protobuf_WasmMemoryFill: SwiftProtobuf.Message, SwiftProtobuf
 
 extension Fuzzilli_Protobuf_WasmBeginBlock: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".WasmBeginBlock"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "parameterTypes"),
-    2: .same(proto: "outputTypes"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}parameterTypes\0\u{1}outputTypes\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -13802,9 +13674,7 @@ extension Fuzzilli_Protobuf_WasmBeginBlock: SwiftProtobuf.Message, SwiftProtobuf
 
 extension Fuzzilli_Protobuf_WasmEndBlock: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".WasmEndBlock"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "outputTypes"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}outputTypes\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -13834,10 +13704,7 @@ extension Fuzzilli_Protobuf_WasmEndBlock: SwiftProtobuf.Message, SwiftProtobuf._
 
 extension Fuzzilli_Protobuf_WasmBeginLoop: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".WasmBeginLoop"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "parameterTypes"),
-    2: .same(proto: "outputTypes"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}parameterTypes\0\u{1}outputTypes\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -13872,9 +13739,7 @@ extension Fuzzilli_Protobuf_WasmBeginLoop: SwiftProtobuf.Message, SwiftProtobuf.
 
 extension Fuzzilli_Protobuf_WasmEndLoop: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".WasmEndLoop"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "outputTypes"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}outputTypes\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -13904,11 +13769,7 @@ extension Fuzzilli_Protobuf_WasmEndLoop: SwiftProtobuf.Message, SwiftProtobuf._M
 
 extension Fuzzilli_Protobuf_WasmBeginTryTable: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".WasmBeginTryTable"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "parameterTypes"),
-    2: .same(proto: "outputTypes"),
-    3: .same(proto: "catches"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}parameterTypes\0\u{1}outputTypes\0\u{1}catches\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -13948,9 +13809,7 @@ extension Fuzzilli_Protobuf_WasmBeginTryTable: SwiftProtobuf.Message, SwiftProto
 
 extension Fuzzilli_Protobuf_WasmEndTryTable: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".WasmEndTryTable"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "outputTypes"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}outputTypes\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -13980,10 +13839,7 @@ extension Fuzzilli_Protobuf_WasmEndTryTable: SwiftProtobuf.Message, SwiftProtobu
 
 extension Fuzzilli_Protobuf_WasmBeginTry: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".WasmBeginTry"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "parameterTypes"),
-    2: .same(proto: "outputTypes"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}parameterTypes\0\u{1}outputTypes\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -14018,9 +13874,7 @@ extension Fuzzilli_Protobuf_WasmBeginTry: SwiftProtobuf.Message, SwiftProtobuf._
 
 extension Fuzzilli_Protobuf_WasmBeginCatchAll: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".WasmBeginCatchAll"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "inputTypes"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}inputTypes\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -14050,10 +13904,7 @@ extension Fuzzilli_Protobuf_WasmBeginCatchAll: SwiftProtobuf.Message, SwiftProto
 
 extension Fuzzilli_Protobuf_WasmBeginCatch: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".WasmBeginCatch"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "parameterTypes"),
-    2: .same(proto: "outputTypes"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}parameterTypes\0\u{1}outputTypes\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -14088,9 +13939,7 @@ extension Fuzzilli_Protobuf_WasmBeginCatch: SwiftProtobuf.Message, SwiftProtobuf
 
 extension Fuzzilli_Protobuf_WasmEndTry: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".WasmEndTry"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "outputTypes"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}outputTypes\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -14120,10 +13969,7 @@ extension Fuzzilli_Protobuf_WasmEndTry: SwiftProtobuf.Message, SwiftProtobuf._Me
 
 extension Fuzzilli_Protobuf_WasmBeginTryDelegate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".WasmBeginTryDelegate"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "parameterTypes"),
-    2: .same(proto: "outputTypes"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}parameterTypes\0\u{1}outputTypes\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -14158,9 +14004,7 @@ extension Fuzzilli_Protobuf_WasmBeginTryDelegate: SwiftProtobuf.Message, SwiftPr
 
 extension Fuzzilli_Protobuf_WasmEndTryDelegate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".WasmEndTryDelegate"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "outputTypes"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}outputTypes\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -14190,9 +14034,7 @@ extension Fuzzilli_Protobuf_WasmEndTryDelegate: SwiftProtobuf.Message, SwiftProt
 
 extension Fuzzilli_Protobuf_WasmThrow: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".WasmThrow"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "parameterTypes"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}parameterTypes\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -14260,9 +14102,7 @@ extension Fuzzilli_Protobuf_WasmRethrow: SwiftProtobuf.Message, SwiftProtobuf._M
 
 extension Fuzzilli_Protobuf_WasmDefineTag: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".WasmDefineTag"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "parameterTypes"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}parameterTypes\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -14292,9 +14132,7 @@ extension Fuzzilli_Protobuf_WasmDefineTag: SwiftProtobuf.Message, SwiftProtobuf.
 
 extension Fuzzilli_Protobuf_WasmBranch: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".WasmBranch"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "parameters"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}parameters\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -14324,10 +14162,7 @@ extension Fuzzilli_Protobuf_WasmBranch: SwiftProtobuf.Message, SwiftProtobuf._Me
 
 extension Fuzzilli_Protobuf_WasmBranchIf: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".WasmBranchIf"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "parameters"),
-    2: .same(proto: "hint"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}parameters\0\u{1}hint\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -14362,10 +14197,7 @@ extension Fuzzilli_Protobuf_WasmBranchIf: SwiftProtobuf.Message, SwiftProtobuf._
 
 extension Fuzzilli_Protobuf_WasmBranchTable: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".WasmBranchTable"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "parameters"),
-    2: .same(proto: "valueCount"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}parameters\0\u{1}valueCount\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -14400,9 +14232,7 @@ extension Fuzzilli_Protobuf_WasmBranchTable: SwiftProtobuf.Message, SwiftProtobu
 
 extension Fuzzilli_Protobuf_WasmReassign: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".WasmReassign"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "variableType"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}variableType\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -14436,12 +14266,7 @@ extension Fuzzilli_Protobuf_WasmReassign: SwiftProtobuf.Message, SwiftProtobuf._
 
 extension Fuzzilli_Protobuf_WasmBeginIf: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".WasmBeginIf"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "parameterTypes"),
-    2: .same(proto: "outputTypes"),
-    3: .same(proto: "inverted"),
-    4: .same(proto: "hint"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}parameterTypes\0\u{1}outputTypes\0\u{1}inverted\0\u{1}hint\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -14486,10 +14311,7 @@ extension Fuzzilli_Protobuf_WasmBeginIf: SwiftProtobuf.Message, SwiftProtobuf._M
 
 extension Fuzzilli_Protobuf_WasmBeginElse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".WasmBeginElse"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "parameterTypes"),
-    2: .same(proto: "outputTypes"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}parameterTypes\0\u{1}outputTypes\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -14524,9 +14346,7 @@ extension Fuzzilli_Protobuf_WasmBeginElse: SwiftProtobuf.Message, SwiftProtobuf.
 
 extension Fuzzilli_Protobuf_WasmEndIf: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".WasmEndIf"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "outputTypes"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}outputTypes\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -14613,9 +14433,7 @@ extension Fuzzilli_Protobuf_WasmSelect: SwiftProtobuf.Message, SwiftProtobuf._Me
 
 extension Fuzzilli_Protobuf_ConstSimd128: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ConstSimd128"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "value"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}value\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -14645,10 +14463,7 @@ extension Fuzzilli_Protobuf_ConstSimd128: SwiftProtobuf.Message, SwiftProtobuf._
 
 extension Fuzzilli_Protobuf_WasmSimd128Compare: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".WasmSimd128Compare"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "shape"),
-    2: .same(proto: "compareOperator"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}shape\0\u{1}compareOperator\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -14683,10 +14498,7 @@ extension Fuzzilli_Protobuf_WasmSimd128Compare: SwiftProtobuf.Message, SwiftProt
 
 extension Fuzzilli_Protobuf_WasmSimd128IntegerUnOp: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".WasmSimd128IntegerUnOp"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "shape"),
-    2: .same(proto: "unaryOperator"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}shape\0\u{1}unaryOperator\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -14721,10 +14533,7 @@ extension Fuzzilli_Protobuf_WasmSimd128IntegerUnOp: SwiftProtobuf.Message, Swift
 
 extension Fuzzilli_Protobuf_WasmSimd128IntegerBinOp: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".WasmSimd128IntegerBinOp"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "shape"),
-    2: .same(proto: "binaryOperator"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}shape\0\u{1}binaryOperator\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -14759,10 +14568,7 @@ extension Fuzzilli_Protobuf_WasmSimd128IntegerBinOp: SwiftProtobuf.Message, Swif
 
 extension Fuzzilli_Protobuf_WasmSimd128IntegerTernaryOp: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".WasmSimd128IntegerTernaryOp"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "shape"),
-    2: .same(proto: "opcode"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}shape\0\u{1}opcode\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -14797,10 +14603,7 @@ extension Fuzzilli_Protobuf_WasmSimd128IntegerTernaryOp: SwiftProtobuf.Message, 
 
 extension Fuzzilli_Protobuf_WasmSimd128FloatUnOp: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".WasmSimd128FloatUnOp"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "shape"),
-    2: .same(proto: "unaryOperator"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}shape\0\u{1}unaryOperator\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -14835,10 +14638,7 @@ extension Fuzzilli_Protobuf_WasmSimd128FloatUnOp: SwiftProtobuf.Message, SwiftPr
 
 extension Fuzzilli_Protobuf_WasmSimd128FloatBinOp: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".WasmSimd128FloatBinOp"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "shape"),
-    2: .same(proto: "binaryOperator"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}shape\0\u{1}binaryOperator\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -14873,10 +14673,7 @@ extension Fuzzilli_Protobuf_WasmSimd128FloatBinOp: SwiftProtobuf.Message, SwiftP
 
 extension Fuzzilli_Protobuf_WasmSimd128FloatTernaryOp: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".WasmSimd128FloatTernaryOp"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "shape"),
-    2: .same(proto: "opcode"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}shape\0\u{1}opcode\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -14911,9 +14708,7 @@ extension Fuzzilli_Protobuf_WasmSimd128FloatTernaryOp: SwiftProtobuf.Message, Sw
 
 extension Fuzzilli_Protobuf_WasmSimdSplat: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".WasmSimdSplat"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "kind"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}kind\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -14943,10 +14738,7 @@ extension Fuzzilli_Protobuf_WasmSimdSplat: SwiftProtobuf.Message, SwiftProtobuf.
 
 extension Fuzzilli_Protobuf_WasmSimdExtractLane: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".WasmSimdExtractLane"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "kind"),
-    2: .same(proto: "lane"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}kind\0\u{1}lane\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -14981,10 +14773,7 @@ extension Fuzzilli_Protobuf_WasmSimdExtractLane: SwiftProtobuf.Message, SwiftPro
 
 extension Fuzzilli_Protobuf_WasmSimdReplaceLane: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".WasmSimdReplaceLane"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "kind"),
-    2: .same(proto: "lane"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}kind\0\u{1}lane\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -15019,11 +14808,7 @@ extension Fuzzilli_Protobuf_WasmSimdReplaceLane: SwiftProtobuf.Message, SwiftPro
 
 extension Fuzzilli_Protobuf_WasmSimdStoreLane: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".WasmSimdStoreLane"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "kind"),
-    2: .same(proto: "staticOffset"),
-    3: .same(proto: "lane"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}kind\0\u{1}staticOffset\0\u{1}lane\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -15063,11 +14848,7 @@ extension Fuzzilli_Protobuf_WasmSimdStoreLane: SwiftProtobuf.Message, SwiftProto
 
 extension Fuzzilli_Protobuf_WasmSimdLoadLane: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".WasmSimdLoadLane"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "kind"),
-    2: .same(proto: "staticOffset"),
-    3: .same(proto: "lane"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}kind\0\u{1}staticOffset\0\u{1}lane\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -15107,10 +14888,7 @@ extension Fuzzilli_Protobuf_WasmSimdLoadLane: SwiftProtobuf.Message, SwiftProtob
 
 extension Fuzzilli_Protobuf_WasmSimdLoad: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".WasmSimdLoad"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "kind"),
-    2: .same(proto: "staticOffset"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}kind\0\u{1}staticOffset\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -15181,12 +14959,44 @@ extension Fuzzilli_Protobuf_WasmEndTypeGroup: SwiftProtobuf.Message, SwiftProtob
   }
 }
 
+extension Fuzzilli_Protobuf_WasmDefineSignatureType: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".WasmDefineSignatureType"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}parameterTypes\0\u{1}outputTypes\0")
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeRepeatedMessageField(value: &self.parameterTypes) }()
+      case 2: try { try decoder.decodeRepeatedMessageField(value: &self.outputTypes) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if !self.parameterTypes.isEmpty {
+      try visitor.visitRepeatedMessageField(value: self.parameterTypes, fieldNumber: 1)
+    }
+    if !self.outputTypes.isEmpty {
+      try visitor.visitRepeatedMessageField(value: self.outputTypes, fieldNumber: 2)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Fuzzilli_Protobuf_WasmDefineSignatureType, rhs: Fuzzilli_Protobuf_WasmDefineSignatureType) -> Bool {
+    if lhs.parameterTypes != rhs.parameterTypes {return false}
+    if lhs.outputTypes != rhs.outputTypes {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
 extension Fuzzilli_Protobuf_WasmDefineArrayType: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".WasmDefineArrayType"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "elementType"),
-    2: .same(proto: "mutability"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}elementType\0\u{1}mutability\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -15225,10 +15035,7 @@ extension Fuzzilli_Protobuf_WasmDefineArrayType: SwiftProtobuf.Message, SwiftPro
 
 extension Fuzzilli_Protobuf_WasmStructField: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".WasmStructField"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "type"),
-    2: .same(proto: "mutability"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}type\0\u{1}mutability\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -15267,9 +15074,7 @@ extension Fuzzilli_Protobuf_WasmStructField: SwiftProtobuf.Message, SwiftProtobu
 
 extension Fuzzilli_Protobuf_WasmDefineStructType: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".WasmDefineStructType"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "fields"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}fields\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -15394,9 +15199,7 @@ extension Fuzzilli_Protobuf_WasmArrayLen: SwiftProtobuf.Message, SwiftProtobuf._
 
 extension Fuzzilli_Protobuf_WasmArrayGet: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".WasmArrayGet"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "isSigned"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}isSigned\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -15464,10 +15267,7 @@ extension Fuzzilli_Protobuf_WasmStructNewDefault: SwiftProtobuf.Message, SwiftPr
 
 extension Fuzzilli_Protobuf_WasmStructGet: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".WasmStructGet"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "fieldIndex"),
-    2: .same(proto: "isSigned"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}fieldIndex\0\u{1}isSigned\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -15502,9 +15302,7 @@ extension Fuzzilli_Protobuf_WasmStructGet: SwiftProtobuf.Message, SwiftProtobuf.
 
 extension Fuzzilli_Protobuf_WasmStructSet: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".WasmStructSet"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "fieldIndex"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}fieldIndex\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -15534,9 +15332,7 @@ extension Fuzzilli_Protobuf_WasmStructSet: SwiftProtobuf.Message, SwiftProtobuf.
 
 extension Fuzzilli_Protobuf_WasmRefNull: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".WasmRefNull"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "type"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}type\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -15608,9 +15404,7 @@ extension Fuzzilli_Protobuf_WasmRefI31: SwiftProtobuf.Message, SwiftProtobuf._Me
 
 extension Fuzzilli_Protobuf_WasmI31Get: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".WasmI31Get"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "isSigned"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}isSigned\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -15640,10 +15434,7 @@ extension Fuzzilli_Protobuf_WasmI31Get: SwiftProtobuf.Message, SwiftProtobuf._Me
 
 extension Fuzzilli_Protobuf_WasmAtomicLoad: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".WasmAtomicLoad"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "loadType"),
-    2: .same(proto: "offset"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}loadType\0\u{1}offset\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -15678,10 +15469,7 @@ extension Fuzzilli_Protobuf_WasmAtomicLoad: SwiftProtobuf.Message, SwiftProtobuf
 
 extension Fuzzilli_Protobuf_WasmAtomicStore: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".WasmAtomicStore"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "storeType"),
-    2: .same(proto: "offset"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}storeType\0\u{1}offset\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -15716,10 +15504,7 @@ extension Fuzzilli_Protobuf_WasmAtomicStore: SwiftProtobuf.Message, SwiftProtobu
 
 extension Fuzzilli_Protobuf_WasmAtomicRMW: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".WasmAtomicRMW"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "op"),
-    2: .same(proto: "offset"),
-  ]
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}op\0\u{1}offset\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -15745,6 +15530,41 @@ extension Fuzzilli_Protobuf_WasmAtomicRMW: SwiftProtobuf.Message, SwiftProtobuf.
   }
 
   public static func ==(lhs: Fuzzilli_Protobuf_WasmAtomicRMW, rhs: Fuzzilli_Protobuf_WasmAtomicRMW) -> Bool {
+    if lhs.op != rhs.op {return false}
+    if lhs.offset != rhs.offset {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension Fuzzilli_Protobuf_WasmAtomicCmpxchg: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".WasmAtomicCmpxchg"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}op\0\u{1}offset\0")
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularEnumField(value: &self.op) }()
+      case 2: try { try decoder.decodeSingularInt64Field(value: &self.offset) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if self.op != .i32Cmpxchg {
+      try visitor.visitSingularEnumField(value: self.op, fieldNumber: 1)
+    }
+    if self.offset != 0 {
+      try visitor.visitSingularInt64Field(value: self.offset, fieldNumber: 2)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Fuzzilli_Protobuf_WasmAtomicCmpxchg, rhs: Fuzzilli_Protobuf_WasmAtomicCmpxchg) -> Bool {
     if lhs.op != rhs.op {return false}
     if lhs.offset != rhs.offset {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
@@ -15785,6 +15605,180 @@ extension Fuzzilli_Protobuf_WasmExternConvertAny: SwiftProtobuf.Message, SwiftPr
   }
 
   public static func ==(lhs: Fuzzilli_Protobuf_WasmExternConvertAny, rhs: Fuzzilli_Protobuf_WasmExternConvertAny) -> Bool {
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension Fuzzilli_Protobuf_WasmDefineDataSegment: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".WasmDefineDataSegment"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}segment\0")
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularBytesField(value: &self.segment) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if !self.segment.isEmpty {
+      try visitor.visitSingularBytesField(value: self.segment, fieldNumber: 1)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Fuzzilli_Protobuf_WasmDefineDataSegment, rhs: Fuzzilli_Protobuf_WasmDefineDataSegment) -> Bool {
+    if lhs.segment != rhs.segment {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension Fuzzilli_Protobuf_WasmDropDataSegment: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".WasmDropDataSegment"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap()
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    // Load everything into unknown fields
+    while try decoder.nextFieldNumber() != nil {}
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Fuzzilli_Protobuf_WasmDropDataSegment, rhs: Fuzzilli_Protobuf_WasmDropDataSegment) -> Bool {
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension Fuzzilli_Protobuf_WasmMemoryInit: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".WasmMemoryInit"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap()
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    // Load everything into unknown fields
+    while try decoder.nextFieldNumber() != nil {}
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Fuzzilli_Protobuf_WasmMemoryInit, rhs: Fuzzilli_Protobuf_WasmMemoryInit) -> Bool {
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension Fuzzilli_Protobuf_WasmMemoryCopy: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".WasmMemoryCopy"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap()
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    // Load everything into unknown fields
+    while try decoder.nextFieldNumber() != nil {}
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Fuzzilli_Protobuf_WasmMemoryCopy, rhs: Fuzzilli_Protobuf_WasmMemoryCopy) -> Bool {
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension Fuzzilli_Protobuf_WasmDefineElementSegment: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".WasmDefineElementSegment"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}size\0")
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularUInt32Field(value: &self.size) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if self.size != 0 {
+      try visitor.visitSingularUInt32Field(value: self.size, fieldNumber: 1)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Fuzzilli_Protobuf_WasmDefineElementSegment, rhs: Fuzzilli_Protobuf_WasmDefineElementSegment) -> Bool {
+    if lhs.size != rhs.size {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension Fuzzilli_Protobuf_WasmDropElementSegment: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".WasmDropElementSegment"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap()
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    // Load everything into unknown fields
+    while try decoder.nextFieldNumber() != nil {}
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Fuzzilli_Protobuf_WasmDropElementSegment, rhs: Fuzzilli_Protobuf_WasmDropElementSegment) -> Bool {
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension Fuzzilli_Protobuf_WasmTableInit: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".WasmTableInit"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap()
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    // Load everything into unknown fields
+    while try decoder.nextFieldNumber() != nil {}
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Fuzzilli_Protobuf_WasmTableInit, rhs: Fuzzilli_Protobuf_WasmTableInit) -> Bool {
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension Fuzzilli_Protobuf_WasmTableCopy: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".WasmTableCopy"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap()
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    // Load everything into unknown fields
+    while try decoder.nextFieldNumber() != nil {}
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Fuzzilli_Protobuf_WasmTableCopy, rhs: Fuzzilli_Protobuf_WasmTableCopy) -> Bool {
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

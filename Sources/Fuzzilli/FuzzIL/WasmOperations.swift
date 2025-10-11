@@ -303,7 +303,7 @@ public enum WasmAtomicRMWType: UInt8, CaseIterable {
     case i64Xchg16U = 0x46
     case i64Xchg32U = 0x47
 
-    var type: ILType {
+    func type() -> ILType {
         switch self {
         case .i32Add, .i32Add8U, .i32Add16U,
              .i32Sub, .i32Sub8U, .i32Sub16U,
@@ -810,6 +810,44 @@ final class WasmDefineTable: WasmOperation {
     }
 }
 
+final class WasmDefineElementSegment: WasmOperation {
+    override var opcode: Opcode { .wasmDefineElementSegment(self) }
+
+    public let size: UInt32
+
+    init(size: UInt32) {
+        self.size = size
+        super.init(numInputs: Int(size), numOutputs: 1, requiredContext: [.wasm])
+    }
+}
+
+class WasmDropElementSegment: WasmOperation {
+    override var opcode: Opcode { .wasmDropElementSegment(self) }
+
+    init() {
+        super.init(
+            numInputs: 1, numOutputs: 0, requiredContext: [.wasmFunction])
+    }
+}
+
+class WasmTableInit: WasmOperation {
+    override var opcode: Opcode { .wasmTableInit(self) }
+
+    init() {
+        super.init(
+            numInputs: 5, numOutputs: 0, requiredContext: [.wasmFunction])
+    }
+}
+
+class WasmTableCopy: WasmOperation {
+    override var opcode: Opcode { .wasmTableCopy(self) }
+
+    init() {
+        super.init(
+            numInputs: 5, numOutputs: 0, requiredContext: [.wasmFunction])
+    }
+}
+
 // TODO: Wasm memory can be initialized in the data segment, theoretically one could initialize them with this instruction as well.
 // Currently they are by default zero initialized and fuzzilli should then just store or load from there.
 // Also note: https://webassembly.github.io/spec/core/syntax/modules.html#memories
@@ -825,14 +863,23 @@ final class WasmDefineMemory: WasmOperation {
     }
 }
 
+final class WasmDefineDataSegment: WasmOperation {
+    override var opcode: Opcode { .wasmDefineDataSegment(self) }
+
+    public let segment: [UInt8]
+
+    init(segment: [UInt8]) {
+        self.segment = segment
+        super.init(numOutputs: 1, attributes: [.isMutable], requiredContext: [.wasm])
+    }
+}
+
 final class WasmDefineTag: WasmOperation {
     override var opcode: Opcode { .wasmDefineTag(self) }
     public let parameterTypes: [ILType]
 
     init(parameterTypes: [ILType]) {
         self.parameterTypes = parameterTypes
-        // Note that tags in wasm are nominal (differently to types) meaning that two tags with the same input are not
-        // the same, therefore this operation is not considered to be .pure.
         super.init(numOutputs: 1, attributes: [], requiredContext: [.wasm])
     }
 }
@@ -884,6 +931,22 @@ final class WasmTableSet: WasmOperation {
         assert(tableType.isWasmTableType)
         self.tableType = tableType.wasmTableType!
         super.init(numInputs: 3, requiredContext: [.wasmFunction])
+    }
+}
+
+final class WasmTableSize: WasmOperation {
+    override var opcode: Opcode { .wasmTableSize(self) }
+
+    init() {
+        super.init(numInputs: 1, numOutputs: 1, requiredContext: [.wasmFunction])
+    }
+}
+
+final class WasmTableGrow: WasmOperation {
+    override var opcode: Opcode { .wasmTableGrow(self) }
+
+    init() {
+        super.init(numInputs: 3, numOutputs: 1, requiredContext: [.wasmFunction])
     }
 }
 
@@ -1132,6 +1195,33 @@ class WasmMemoryFill: WasmOperation {
     }
 }
 
+class WasmMemoryCopy: WasmOperation {
+    override var opcode: Opcode { .wasmMemoryCopy(self) }
+
+    init() {
+        super.init(
+            numInputs: 5, numOutputs: 0, requiredContext: [.wasmFunction])
+    }
+}
+
+class WasmMemoryInit: WasmOperation {
+    override var opcode: Opcode { .wasmMemoryInit(self) }
+
+    init() {
+        super.init(
+            numInputs: 5, numOutputs: 0, requiredContext: [.wasmFunction])
+    }
+
+}
+
+final class WasmDropDataSegment: WasmOperation {
+    override var opcode: Opcode { .wasmDropDataSegment(self) }
+
+    init() {
+        super.init(numInputs: 1, requiredContext: [.wasmFunction])
+    }
+}
+
 final class WasmJsCall: WasmOperation {
     override var opcode: Opcode { .wasmJsCall(self) }
 
@@ -1161,7 +1251,7 @@ final class WasmBeginBlock: WasmOperation {
 
     init(with signature: WasmSignature) {
         self.signature = signature
-        super.init(numInputs: signature.parameterTypes.count, numInnerOutputs: signature.parameterTypes.count + 1, attributes: [.isBlockStart, .propagatesSurroundingContext], requiredContext: [.wasmFunction], contextOpened: [.wasmBlock])
+        super.init(numInputs: signature.parameterTypes.count, numInnerOutputs: signature.parameterTypes.count + 1, attributes: [.isBlockStart, .propagatesSurroundingContext], requiredContext: [.wasmFunction])
     }
 }
 
@@ -1172,7 +1262,7 @@ final class WasmEndBlock: WasmOperation {
 
     init(outputTypes: [ILType]) {
         self.outputTypes = outputTypes
-        super.init(numInputs: outputTypes.count, numOutputs: outputTypes.count, attributes: [.isBlockEnd, .resumesSurroundingContext], requiredContext: [.wasmFunction, .wasmBlock])
+        super.init(numInputs: outputTypes.count, numOutputs: outputTypes.count, attributes: [.isBlockEnd, .resumesSurroundingContext], requiredContext: [.wasmFunction])
     }
 }
 
@@ -1196,7 +1286,7 @@ final class WasmBeginIf: WasmOperation {
         // value stack and that the condition is the first value to be removed from the stack, so
         // it needs to be the last one pushed to it.
         // Inner outputs: 1 label (used for branch instructions) plus all the parameters.
-        super.init(numInputs: signature.parameterTypes.count + 1, numInnerOutputs: 1 + signature.parameterTypes.count, attributes: [.isBlockStart, .propagatesSurroundingContext, .isMutable], requiredContext: [.wasmFunction], contextOpened: [.wasmBlock])
+        super.init(numInputs: signature.parameterTypes.count + 1, numInnerOutputs: 1 + signature.parameterTypes.count, attributes: [.isBlockStart, .propagatesSurroundingContext, .isMutable], requiredContext: [.wasmFunction])
     }
 }
 
@@ -1209,7 +1299,7 @@ final class WasmBeginElse: WasmOperation {
         // The WasmBeginElse acts both as a block end for the true case and as a block start for the
         // false case. As such, its input types are the results from the true block and its inner
         // output types are the same as for the corresponding WasmBeginIf.
-        super.init(numInputs: signature.outputTypes.count, numInnerOutputs: 1 + signature.parameterTypes.count, attributes: [.isBlockStart, .isBlockEnd, .propagatesSurroundingContext], requiredContext: [.wasmFunction], contextOpened: [.wasmBlock])
+        super.init(numInputs: signature.outputTypes.count, numInnerOutputs: 1 + signature.parameterTypes.count, attributes: [.isBlockStart, .isBlockEnd, .propagatesSurroundingContext], requiredContext: [.wasmFunction])
     }
 }
 
@@ -1219,7 +1309,7 @@ final class WasmEndIf: WasmOperation {
 
     init(outputTypes: [ILType] = []) {
         self.outputTypes = outputTypes
-        super.init(numInputs: outputTypes.count, numOutputs: outputTypes.count, attributes: [.isBlockEnd], requiredContext: [.wasmBlock, .wasmFunction])
+        super.init(numInputs: outputTypes.count, numOutputs: outputTypes.count, attributes: [.isBlockEnd], requiredContext: [.wasmFunction])
     }
 }
 
@@ -1262,7 +1352,7 @@ final class WasmBeginTryTable: WasmOperation {
         self.catches = catches
         let inputTagCount = catches.count {$0 == .Ref || $0 == .NoRef}
         let inputLabelCount = catches.count
-        super.init(numInputs: signature.parameterTypes.count + inputLabelCount + inputTagCount , numInnerOutputs: signature.parameterTypes.count + 1, attributes: [.isBlockStart, .propagatesSurroundingContext], requiredContext: [.wasmFunction], contextOpened: [.wasmBlock])
+        super.init(numInputs: signature.parameterTypes.count + inputLabelCount + inputTagCount , numInnerOutputs: signature.parameterTypes.count + 1, attributes: [.isBlockStart, .propagatesSurroundingContext], requiredContext: [.wasmFunction])
     }
 }
 
@@ -1272,7 +1362,7 @@ final class WasmEndTryTable: WasmOperation {
 
     init(outputTypes: [ILType]) {
         self.outputTypes = outputTypes
-        super.init(numInputs: outputTypes.count, numOutputs: outputTypes.count, attributes: [.isBlockEnd, .resumesSurroundingContext], requiredContext: [.wasmFunction, .wasmBlock])
+        super.init(numInputs: outputTypes.count, numOutputs: outputTypes.count, attributes: [.isBlockEnd, .resumesSurroundingContext], requiredContext: [.wasmFunction])
     }
 }
 
@@ -1282,7 +1372,7 @@ final class WasmBeginTry: WasmOperation {
 
     init(with signature: WasmSignature) {
         self.signature = signature
-        super.init(numInputs: signature.parameterTypes.count, numInnerOutputs: signature.parameterTypes.count + 1, attributes: [.isBlockStart, .propagatesSurroundingContext], requiredContext: [.wasmFunction], contextOpened: [.wasmBlock])
+        super.init(numInputs: signature.parameterTypes.count, numInnerOutputs: signature.parameterTypes.count + 1, attributes: [.isBlockStart, .propagatesSurroundingContext], requiredContext: [.wasmFunction])
     }
 }
 
@@ -2254,5 +2344,50 @@ final class WasmAtomicRMW: WasmOperation {
         self.op = op
         self.offset = offset
         super.init(numInputs: 3, numOutputs: 1, attributes: [.isMutable], requiredContext: [.wasmFunction])
+    }
+}
+
+public enum WasmAtomicCmpxchgType: UInt8, CaseIterable {
+    case i32Cmpxchg = 0x48
+    case i64Cmpxchg = 0x49
+    case i32Cmpxchg8U = 0x4a
+    case i32Cmpxchg16U = 0x4b
+    case i64Cmpxchg8U = 0x4c
+    case i64Cmpxchg16U = 0x4d
+    case i64Cmpxchg32U = 0x4e
+
+    func type() -> ILType {
+        switch self {
+        case .i32Cmpxchg, .i32Cmpxchg8U, .i32Cmpxchg16U:
+            return .wasmi32
+        case .i64Cmpxchg, .i64Cmpxchg8U, .i64Cmpxchg16U, .i64Cmpxchg32U:
+            return .wasmi64
+        }
+    }
+
+    func naturalAlignment() -> Int64 {
+        switch self {
+        case .i32Cmpxchg8U, .i64Cmpxchg8U:
+            return 1
+        case .i32Cmpxchg16U, .i64Cmpxchg16U:
+            return 2
+        case .i32Cmpxchg, .i64Cmpxchg32U:
+            return 4
+        case .i64Cmpxchg:
+            return 8
+        }
+    }
+}
+
+final class WasmAtomicCmpxchg: WasmOperation {
+    override var opcode: Opcode { .wasmAtomicCmpxchg(self) }
+
+    let op: WasmAtomicCmpxchgType
+    let offset: Int64
+
+    init(op: WasmAtomicCmpxchgType, offset: Int64) {
+        self.op = op
+        self.offset = offset
+        super.init(numInputs: 4, numOutputs: 1, attributes: [.isMutable], requiredContext: [.wasmFunction])
     }
 }

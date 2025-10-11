@@ -20,6 +20,10 @@ public class Storage: Module {
     private let crashesDir: String
     private let duplicateCrashesDir: String
     private let corpusDir: String
+    private let corpusTier1Dir: String
+    private let corpusTier2Dir: String
+    private let corpusTier3Dir: String
+    private let corpusTier4Dir: String
     private let statisticsDir: String
     private let stateFile: String
     private let failedDir: String
@@ -36,6 +40,10 @@ public class Storage: Module {
         self.crashesDir = storageDir + "/crashes"
         self.duplicateCrashesDir = storageDir + "/crashes/duplicates"
         self.corpusDir = storageDir + "/corpus"
+        self.corpusTier1Dir = corpusDir + "/tier1"
+        self.corpusTier2Dir = corpusDir + "/tier2"
+        self.corpusTier3Dir = corpusDir + "/tier3"
+        self.corpusTier4Dir = corpusDir + "/tier4"
         self.failedDir = storageDir + "/failed"
         self.timeOutDir = storageDir + "/timeouts"
         self.statisticsDir = storageDir + "/stats"
@@ -53,6 +61,10 @@ public class Storage: Module {
             try FileManager.default.createDirectory(atPath: crashesDir, withIntermediateDirectories: true)
             try FileManager.default.createDirectory(atPath: duplicateCrashesDir, withIntermediateDirectories: true)
             try FileManager.default.createDirectory(atPath: corpusDir, withIntermediateDirectories: true)
+            try FileManager.default.createDirectory(atPath: corpusTier1Dir, withIntermediateDirectories: true)
+            try FileManager.default.createDirectory(atPath: corpusTier2Dir, withIntermediateDirectories: true)
+            try FileManager.default.createDirectory(atPath: corpusTier3Dir, withIntermediateDirectories: true)
+            try FileManager.default.createDirectory(atPath: corpusTier4Dir, withIntermediateDirectories: true)
             try FileManager.default.createDirectory(atPath: statisticsDir, withIntermediateDirectories: true)
             if fuzzer.config.enableDiagnostics {
                 try FileManager.default.createDirectory(atPath: failedDir, withIntermediateDirectories: true)
@@ -97,7 +109,8 @@ public class Storage: Module {
 
         fuzzer.registerEventListener(for: fuzzer.events.InterestingProgramFound) { ev in
             let filename = "program_\(self.formatDate())_\(ev.program.id)"
-            self.storeProgram(ev.program, as: filename, in: self.corpusDir)
+            let tierDirectory = self.corpusTierDirectory(for: ev.corpusWeight)
+            self.storeProgram(ev.program, as: filename, in: tierDirectory)
         }
 
         if fuzzer.config.enableDiagnostics {
@@ -181,6 +194,18 @@ public class Storage: Module {
 
             let url = URL(fileURLWithPath: "\(directory)/\(filename).fuzzil.history")
             createFile(url, withContent: content)
+        }
+    }
+
+    private func corpusTierDirectory(for weight: Int) -> String {
+        if weight >= 12 {
+            return corpusTier1Dir
+        } else if weight > 4 {
+            return corpusTier2Dir
+        } else if weight > 0 {
+            return corpusTier3Dir
+        } else {
+            return corpusTier4Dir
         }
     }
 

@@ -81,9 +81,7 @@ class MockEvaluator: ProgramEvaluator {
 }
 
 /// Create a fuzzer instance usable for testing.
-public func makeMockFuzzer(config maybeConfiguration: Configuration? = nil, engine maybeEngine: FuzzEngine? = nil, runner maybeRunner: ScriptRunner? = nil, environment maybeEnvironment: JavaScriptEnvironment? = nil, evaluator maybeEvaluator: ProgramEvaluator? = nil, corpus maybeCorpus: Corpus? = nil, codeGenerators additionalCodeGenerators : [(CodeGenerator, Int)] = []) -> Fuzzer {
-    dispatchPrecondition(condition: .onQueue(DispatchQueue.main))
-
+public func makeMockFuzzer(config maybeConfiguration: Configuration? = nil, engine maybeEngine: FuzzEngine? = nil, runner maybeRunner: ScriptRunner? = nil, environment maybeEnvironment: JavaScriptEnvironment? = nil, evaluator maybeEvaluator: ProgramEvaluator? = nil, corpus maybeCorpus: Corpus? = nil, codeGenerators additionalCodeGenerators : [(CodeGenerator, Int)] = [], queue: DispatchQueue? = nil) -> Fuzzer {
     // The configuration of this fuzzer.
     let configuration = maybeConfiguration ?? Configuration(logLevel: .warning)
 
@@ -119,7 +117,7 @@ public func makeMockFuzzer(config maybeConfiguration: Configuration? = nil, engi
     let codeGenerators = WeightedList<CodeGenerator>(
         (CodeGenerators + WasmCodeGenerators).map {
             guard let weight = codeGeneratorWeights[$0.name] else {
-                fatalError("Missing weight for code generator \($0.name) in CodeGeneratorWeights.swift")
+                fatalError("Missing weight for CodeGenerator \($0.name) in CodeGeneratorWeights.swift")
             }
             return ($0, weight)
         } + additionalCodeGenerators)
@@ -139,19 +137,23 @@ public func makeMockFuzzer(config maybeConfiguration: Configuration? = nil, engi
                         lifter: lifter,
                         corpus: corpus,
                         minimizer: minimizer,
-                        queue: DispatchQueue.main)
+                        queue: queue ?? DispatchQueue.main)
 
-    fuzzer.registerEventListener(for: fuzzer.events.Log) { ev in
-        print("[\(ev.label)] \(ev.message)")
+    let initializeFuzzer =  {
+        fuzzer.registerEventListener(for: fuzzer.events.Log) { ev in
+            print("[\(ev.label)] \(ev.message)")
+        }
+
+        fuzzer.initialize()
     }
-
-    fuzzer.initialize()
-
-    // Tests can also rely on the corpus not being empty
-    let b = fuzzer.makeBuilder()
-    b.buildPrefix()
-    b.build(n: 50, by: .generating)
-    corpus.add(b.finalize(), ProgramAspects(outcome: .succeeded))
+    // If a DispatchQueue was provided by the caller, initialize the fuzzer
+    // there. Otherwise initialize it directly.
+    if let queue {
+        queue.sync {initializeFuzzer()}
+    } else {
+        dispatchPrecondition(condition: .onQueue(DispatchQueue.main))
+        initializeFuzzer()
+    }
 
     return fuzzer
 }

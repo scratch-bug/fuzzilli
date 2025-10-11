@@ -42,6 +42,9 @@ public class Fuzzer {
     /// The active code generators. It is possible to change these (temporarily) at runtime. This is e.g. done by some ProgramTemplates.
     public private(set) var codeGenerators: WeightedList<CodeGenerator>
 
+    // This needs to stay in sync with the provided codeGenerators.
+    public private(set) var contextGraph: ContextGraph
+
     /// The active program templates. These are only used if the HybridEngine is enabled.
     public let programTemplates: WeightedList<ProgramTemplate>
 
@@ -169,6 +172,7 @@ public class Fuzzer {
         self.engine = engine
         self.mutators = mutators
         self.codeGenerators = codeGenerators
+
         self.programTemplates = programTemplates
         self.evaluator = evaluator
         self.environment = environment
@@ -177,6 +181,12 @@ public class Fuzzer {
         self.runner = scriptRunner
         self.minimizer = minimizer
         self.logger = Logger(withLabel: "Fuzzer")
+        self.contextGraph = ContextGraph(for: codeGenerators, withLogger: self.logger)
+
+        // Pass-through any postprocessor to the generative engine.
+        if let postProcessor = engine.postProcessor {
+            corpusGenerationEngine.registerPostProcessor(postProcessor)
+        }
 
         // Register this fuzzer instance with its queue so that it is possible to
         // obtain a reference to the Fuzzer instance when running on its queue.
@@ -211,6 +221,8 @@ public class Fuzzer {
         guard generators.contains(where: { $0.isValueGenerator }) else {
             fatalError("Code generators must contain at least one value generator")
         }
+        // This builds a graph that we need later for scheduling generators.
+        self.contextGraph = ContextGraph(for: generators, withLogger: self.logger)
         self.codeGenerators = generators
     }
 
@@ -267,17 +279,19 @@ public class Fuzzer {
             let nameMaxLength = self.codeGenerators.map({ $0.name.count }).max()!
 
             for generator in self.codeGenerators {
-                if generator.invocationCount > 100 && generator.invocationSuccessRate! < 0.2 {
-                    let percentage = Statistics.percentageOrNa(generator.invocationSuccessRate, 7)
-                    let name = generator.name.rightPadded(toLength: nameMaxLength)
-                    let invocations = String(format: "%12d", generator.invocationCount)
-                    self.logger.warning("Code generator \(name) might have too restrictive dynamic requirements. Its successful invocation rate is only \(percentage)% after \(invocations) invocations")
-                }
-                if generator.totalSamples >= 100 && generator.correctnessRate! < 0.05 {
-                    let name = generator.name.rightPadded(toLength: nameMaxLength)
-                    let percentage = Statistics.percentageOrNa(generator.correctnessRate, 7)
-                    let totalSamples = String(format: "%10d", generator.totalSamples)
-                    self.logger.warning("Code generator \(name) might be broken. Correctness rate is only \(percentage)% after \(totalSamples) generated samples")
+                for stub in generator.parts {
+                    if stub.invocationCount > 100 && stub.invocationSuccessRate! < 0.2 {
+                        let percentage = Statistics.percentageOrNa(stub.invocationSuccessRate, 7)
+                        let name = stub.name.rightPadded(toLength: nameMaxLength)
+                        let invocations = String(format: "%12d", stub.invocationCount)
+                        self.logger.warning("Code generator \(name) might have too restrictive dynamic requirements. Its successful invocation rate is only \(percentage)% after \(invocations) invocations")
+                    }
+                    if stub.totalSamples >= 100 && stub.correctnessRate! < 0.05 {
+                        let name = stub.name.rightPadded(toLength: nameMaxLength)
+                        let percentage = Statistics.percentageOrNa(stub.correctnessRate, 7)
+                        let totalSamples = String(format: "%10d", stub.totalSamples)
+                        self.logger.warning("Code generator \(name) might be broken. Correctness rate is only \(percentage)% after \(totalSamples) generated samples")
+                    }
                 }
             }
             for template in self.programTemplates {
@@ -442,9 +456,10 @@ public class Fuzzer {
 
             if case .corpusImport(let mode) = origin, mode == .full, !wasImported {
                 // We're performing a full corpus import, so the sample still needs to be added to our corpus even though it doesn't trigger any new behaviour.
-                corpus.add(program, ProgramAspects(outcome: .succeeded))
+                let defaultAspects = ProgramAspects(outcome: .succeeded)
+                corpus.add(program, defaultAspects)
                 // We also dispatch the InterestingProgramFound event here since we technically found an interesting program, but also so that the program is forwarded to child nodes.
-                dispatchEvent(events.InterestingProgramFound, data: (program, origin))
+                dispatchEvent(events.InterestingProgramFound, data: (program, origin, defaultAspects.corpusWeightBonus))
                 wasImported = true
             }
 
@@ -717,9 +732,12 @@ public class Fuzzer {
                 } else {
                     program.comments.add("Imported program is interesting due to \(aspects)", at: .footer)
                 }
+                if aspects.corpusWeightBonus > 0 {
+                    program.comments.add("Corpus weight bonus: \(aspects.corpusWeightBonus)", at: .footer)
+                }
             }
             assert(!program.code.contains(where: { $0.op is JsInternalOperation }))
-            dispatchEvent(events.InterestingProgramFound, data: (program, origin))
+            dispatchEvent(events.InterestingProgramFound, data: (program, origin, aspects.corpusWeightBonus))
 
             // If we're running in static corpus mode, we only add programs to our corpus during corpus import.
             if !config.staticCorpus || origin.isFromCorpusImport() {
@@ -804,7 +822,7 @@ public class Fuzzer {
         case .none:
             break
         case .iterationsPerformed(let maxIterations):
-            if iterations > maxIterations {
+            if iterations >= maxIterations {
                 return shutdown(reason: .finished)
             }
         case .timeFuzzed(let maxRuntime):
@@ -952,13 +970,20 @@ public class Fuzzer {
             b.eval(test)
             execution = execute(b.finalize(), purpose: .startup)
 
+            if execution.outcome == .timedOut {
+                logger.fatal("Testcase \"\(test)\" timed out, the configured timeout threshold "
+                + "(\(config.timeout)ms) might be too low")
+            }
+
             switch expectedResult {
             case .shouldSucceed where execution.outcome != .succeeded:
-                logger.fatal("Testcase \"\(test)\" did not execute successfully")
+                logger.fatal("Testcase \"\(test)\" did not execute successfully" +
+                    "\nstdout:\n\(execution.stdout)\nstderr:\n\(execution.stderr)")
             case .shouldCrash where !execution.outcome.isCrash():
                 logger.fatal("Testcase \"\(test)\" did not crash")
             case .shouldNotCrash where execution.outcome.isCrash():
-                logger.fatal("Testcase \"\(test)\" unexpectedly crashed")
+                logger.fatal("Testcase \"\(test)\" unexpectedly crashed" +
+                    "\nstdout:\n\(execution.stdout)\nstderr:\n\(execution.stderr)")
             default:
                 // Test passed
                 break

@@ -549,7 +549,12 @@ extension Instruction: ProtobufConvertible {
             case .loadFloat(let op):
                 $0.loadFloat = Fuzzilli_Protobuf_LoadFloat.with { $0.value = op.value }
             case .loadString(let op):
-                $0.loadString = Fuzzilli_Protobuf_LoadString.with { $0.value = op.value }
+                $0.loadString = Fuzzilli_Protobuf_LoadString.with {
+                    $0.value = op.value;
+                    if let customName = op.customName {
+                        $0.customName = customName
+                    }
+                }
             case .loadBoolean(let op):
                 $0.loadBoolean = Fuzzilli_Protobuf_LoadBoolean.with { $0.value = op.value }
             case .loadUndefined:
@@ -627,6 +632,12 @@ extension Instruction: ProtobufConvertible {
                 }
             case .endClassInstanceMethod:
                 $0.endClassInstanceMethod = Fuzzilli_Protobuf_EndClassInstanceMethod()
+            case .beginClassInstanceComputedMethod(let op):
+                $0.beginClassInstanceComputedMethod = Fuzzilli_Protobuf_BeginClassInstanceComputedMethod.with {
+                    $0.parameters = convertParameters(op.parameters)
+                }
+            case .endClassInstanceComputedMethod:
+                $0.endClassInstanceComputedMethod = Fuzzilli_Protobuf_EndClassInstanceComputedMethod()
             case .beginClassInstanceGetter(let op):
                 $0.beginClassInstanceGetter = Fuzzilli_Protobuf_BeginClassInstanceGetter.with { $0.propertyName = op.propertyName }
             case .endClassInstanceGetter:
@@ -658,6 +669,12 @@ extension Instruction: ProtobufConvertible {
                 }
             case .endClassStaticMethod:
                 $0.endClassStaticMethod = Fuzzilli_Protobuf_EndClassStaticMethod()
+            case .beginClassStaticComputedMethod(let op):
+                $0.beginClassStaticComputedMethod = Fuzzilli_Protobuf_BeginClassStaticComputedMethod.with {
+                    $0.parameters = convertParameters(op.parameters)
+                }
+            case .endClassStaticComputedMethod:
+                $0.endClassStaticComputedMethod = Fuzzilli_Protobuf_EndClassStaticComputedMethod()
             case .beginClassStaticGetter(let op):
                 $0.beginClassStaticGetter = Fuzzilli_Protobuf_BeginClassStaticGetter.with { $0.propertyName = op.propertyName }
             case .endClassStaticGetter:
@@ -708,7 +725,10 @@ extension Instruction: ProtobufConvertible {
                     $0.isGuarded = op.isGuarded
                 }
             case .setProperty(let op):
-                $0.setProperty = Fuzzilli_Protobuf_SetProperty.with { $0.propertyName = op.propertyName }
+                $0.setProperty = Fuzzilli_Protobuf_SetProperty.with {
+                    $0.propertyName = op.propertyName
+                    $0.isGuarded = op.isGuarded
+                }
             case .updateProperty(let op):
                 $0.updateProperty = Fuzzilli_Protobuf_UpdateProperty.with {
                     $0.propertyName = op.propertyName
@@ -909,6 +929,14 @@ extension Instruction: ProtobufConvertible {
                 $0.createNamedVariable = Fuzzilli_Protobuf_CreateNamedVariable.with {
                     $0.variableName = op.variableName
                     $0.declarationMode = convertEnum(op.declarationMode, NamedVariableDeclarationMode.allCases)
+                }
+            case .createNamedDisposableVariable(let op):
+                $0.createNamedDisposableVariable = Fuzzilli_Protobuf_CreateNamedDisposableVariable.with {
+                    $0.variableName = op.variableName
+                }
+            case .createNamedAsyncDisposableVariable(let op):
+                $0.createNamedAsyncDisposableVariable = Fuzzilli_Protobuf_CreateNamedAsyncDisposableVariable.with {
+                    $0.variableName = op.variableName
                 }
             case .eval(let op):
                 $0.eval = Fuzzilli_Protobuf_Eval.with {
@@ -1228,6 +1256,16 @@ extension Instruction: ProtobufConvertible {
                     }
                     $0.isTable64 = op.isTable64
                 }
+            case .wasmDefineElementSegment(let op):
+                $0.wasmDefineElementSegment = Fuzzilli_Protobuf_WasmDefineElementSegment.with {
+                    $0.size = op.size
+                }
+            case .wasmDropElementSegment(_):
+                $0.wasmDropElementSegment = Fuzzilli_Protobuf_WasmDropElementSegment()
+            case .wasmTableCopy(_):
+                $0.wasmTableCopy = Fuzzilli_Protobuf_WasmTableCopy()
+            case .wasmTableInit(_):
+                $0.wasmTableInit = Fuzzilli_Protobuf_WasmTableInit()
             case .wasmDefineMemory(let op):
                 assert(op.wasmMemory.isWasmMemoryType)
                 let mem = op.wasmMemory.wasmMemoryType!
@@ -1238,6 +1276,11 @@ extension Instruction: ProtobufConvertible {
                     }
                     $0.wasmMemory.isShared = mem.isShared
                     $0.wasmMemory.isMemory64 = mem.isMemory64
+                }
+
+            case .wasmDefineDataSegment(let op):
+                $0.wasmDefineDataSegment = Fuzzilli_Protobuf_WasmDefineDataSegment.with {
+                    $0.segment = Data(op.segment)
                 }
             case .wasmLoadGlobal(let op):
                 $0.wasmLoadGlobal = Fuzzilli_Protobuf_WasmLoadGlobal.with {
@@ -1310,12 +1353,27 @@ extension Instruction: ProtobufConvertible {
                     $0.op = convertEnum(op.op, WasmAtomicRMWType.allCases)
                     $0.offset = op.offset
                 }
+            case .wasmAtomicCmpxchg(let op):
+                $0.wasmAtomicCmpxchg = Fuzzilli_Protobuf_WasmAtomicCmpxchg.with {
+                    $0.op = convertEnum(op.op, WasmAtomicCmpxchgType.allCases)
+                    $0.offset = op.offset
+                }
             case .wasmMemorySize(_):
                 $0.wasmMemorySize = Fuzzilli_Protobuf_WasmMemorySize()
             case .wasmMemoryGrow(_):
                 $0.wasmMemoryGrow = Fuzzilli_Protobuf_WasmMemoryGrow()
+            case .wasmTableSize(_):
+                $0.wasmTableSize = Fuzzilli_Protobuf_WasmTableSize()
+            case .wasmTableGrow(_):
+                $0.wasmTableGrow = Fuzzilli_Protobuf_WasmTableGrow()
+            case .wasmMemoryCopy(_):
+                $0.wasmMemoryCopy = Fuzzilli_Protobuf_WasmMemoryCopy()
             case .wasmMemoryFill(_):
                 $0.wasmMemoryFill = Fuzzilli_Protobuf_WasmMemoryFill()
+            case .wasmMemoryInit(_):
+                $0.wasmMemoryInit = Fuzzilli_Protobuf_WasmMemoryInit()
+            case .wasmDropDataSegment(_):
+                $0.wasmDropDataSegment = Fuzzilli_Protobuf_WasmDropDataSegment()
             case .beginWasmFunction(let op):
                 $0.beginWasmFunction = Fuzzilli_Protobuf_BeginWasmFunction.with {
                     $0.parameterTypes = op.signature.parameterTypes.map(ILTypeToWasmTypeEnum)
@@ -1501,6 +1559,11 @@ extension Instruction: ProtobufConvertible {
                 $0.wasmBeginTypeGroup = Fuzzilli_Protobuf_WasmBeginTypeGroup()
             case .wasmEndTypeGroup(_):
                 $0.wasmEndTypeGroup = Fuzzilli_Protobuf_WasmEndTypeGroup()
+            case .wasmDefineSignatureType(let op):
+                $0.wasmDefineSignatureType = Fuzzilli_Protobuf_WasmDefineSignatureType.with {
+                    $0.parameterTypes = op.signature.parameterTypes.map(ILTypeToWasmTypeEnum)
+                    $0.outputTypes = op.signature.outputTypes.map(ILTypeToWasmTypeEnum)
+                }
             case .wasmDefineArrayType(let op):
                 $0.wasmDefineArrayType = Fuzzilli_Protobuf_WasmDefineArrayType.with {
                     $0.elementType = ILTypeToWasmTypeEnum(op.elementType)
@@ -1782,7 +1845,8 @@ extension Instruction: ProtobufConvertible {
         case .loadFloat(let p):
             op = LoadFloat(value: p.value)
         case .loadString(let p):
-            op = LoadString(value: p.value)
+            let customName = p.customName.isEmpty ? nil: p.customName;
+            op = LoadString(value: p.value, customName: customName)
         case .loadBoolean(let p):
             op = LoadBoolean(value: p.value)
         case .loadUndefined:
@@ -1845,6 +1909,10 @@ extension Instruction: ProtobufConvertible {
             op = BeginClassInstanceMethod(methodName: p.methodName, parameters: convertParameters(p.parameters))
         case .endClassInstanceMethod:
             op = EndClassInstanceMethod()
+        case .beginClassInstanceComputedMethod(let p):
+            op = BeginClassInstanceComputedMethod(parameters: convertParameters(p.parameters))
+        case .endClassInstanceComputedMethod:
+            op = EndClassInstanceComputedMethod()
         case .beginClassInstanceGetter(let p):
             op = BeginClassInstanceGetter(propertyName: p.propertyName)
         case .endClassInstanceGetter:
@@ -1867,6 +1935,10 @@ extension Instruction: ProtobufConvertible {
             op = BeginClassStaticMethod(methodName: p.methodName, parameters: convertParameters(p.parameters))
         case .endClassStaticMethod:
             op = EndClassStaticMethod()
+        case .beginClassStaticComputedMethod(let p):
+            op = BeginClassStaticComputedMethod(parameters: convertParameters(p.parameters))
+        case .endClassStaticComputedMethod:
+            op = EndClassStaticComputedMethod()
         case .beginClassStaticGetter(let p):
             op = BeginClassStaticGetter(propertyName: p.propertyName)
         case .endClassStaticGetter:
@@ -1902,7 +1974,7 @@ extension Instruction: ProtobufConvertible {
         case .getProperty(let p):
             op = GetProperty(propertyName: p.propertyName, isGuarded: p.isGuarded)
         case .setProperty(let p):
-            op = SetProperty(propertyName: p.propertyName)
+            op = SetProperty(propertyName: p.propertyName, isGuarded: p.isGuarded)
         case .updateProperty(let p):
             op = UpdateProperty(propertyName: p.propertyName, operator: try convertEnum(p.op, BinaryOperator.allCases))
         case .deleteProperty(let p):
@@ -2040,6 +2112,10 @@ extension Instruction: ProtobufConvertible {
             op = Compare(try convertEnum(p.op, Comparator.allCases))
         case .createNamedVariable(let p):
             op = CreateNamedVariable(p.variableName, declarationMode: try convertEnum(p.declarationMode, NamedVariableDeclarationMode.allCases))
+        case .createNamedDisposableVariable(let p):
+            op = CreateNamedDisposableVariable(p.variableName)
+        case .createNamedAsyncDisposableVariable(let p):
+            op = CreateNamedAsyncDisposableVariable(p.variableName)
         case .eval(let p):
             let numArguments = inouts.count - (p.hasOutput_p ? 1 : 0)
             op = Eval(p.code, numArguments: numArguments, hasOutput: p.hasOutput_p)
@@ -2299,9 +2375,19 @@ extension Instruction: ProtobufConvertible {
                                      WasmTableType.IndexInTableAndWasmSignature(indexInTable: Int(entry.index), signature: WasmSignatureFromProto(entry.signature))
                                  },
                                  isTable64: p.isTable64)
+        case .wasmDefineElementSegment(let p):
+            op = WasmDefineElementSegment(size: p.size)
+        case .wasmDropElementSegment(_):
+            op = WasmDropElementSegment()
+        case .wasmTableInit(_):
+            op = WasmTableInit()
+        case .wasmTableCopy(_):
+            op = WasmTableCopy()
         case .wasmDefineMemory(let p):
             let maxPages = p.wasmMemory.hasMaxPages ? Int(p.wasmMemory.maxPages) : nil
             op = WasmDefineMemory(limits: Limits(min: Int(p.wasmMemory.minPages), max: maxPages), isShared: p.wasmMemory.isShared, isMemory64: p.wasmMemory.isMemory64)
+        case .wasmDefineDataSegment(let p):
+            op = WasmDefineDataSegment(segment: [UInt8](p.segment))
         case .wasmLoadGlobal(let p):
             op = WasmLoadGlobal(globalType: WasmTypeEnumToILType(p.globalType))
         case .wasmStoreGlobal(let p):
@@ -2338,8 +2424,18 @@ extension Instruction: ProtobufConvertible {
             op = WasmMemorySize()
         case .wasmMemoryGrow(_):
             op = WasmMemoryGrow()
+        case .wasmTableSize(_):
+            op = WasmTableSize()
+        case .wasmTableGrow(_):
+            op = WasmTableGrow()
+        case .wasmMemoryCopy(_):
+            op = WasmMemoryCopy()
         case .wasmMemoryFill(_):
             op = WasmMemoryFill()
+        case .wasmMemoryInit(_):
+            op = WasmMemoryInit()
+        case .wasmDropDataSegment(_):
+            op = WasmDropDataSegment()
         case .beginWasmFunction(let p):
             let parameters = p.parameterTypes.map(WasmTypeEnumToILType)
             let outputs = p.outputTypes.map(WasmTypeEnumToILType)
@@ -2468,6 +2564,8 @@ extension Instruction: ProtobufConvertible {
             op = WasmEndTypeGroup(typesCount: inouts.count / 2)
         case .wasmDefineArrayType(let p):
             op = WasmDefineArrayType(elementType: WasmTypeEnumToILType(p.elementType), mutability: p.mutability)
+        case .wasmDefineSignatureType(let p):
+            op = WasmDefineSignatureType(signature: p.parameterTypes.map(WasmTypeEnumToILType) => p.outputTypes.map(WasmTypeEnumToILType))
         case .wasmDefineStructType(let p):
             op = WasmDefineStructType(fields: p.fields.map { field in
                 return WasmDefineStructType.Field(type: WasmTypeEnumToILType(field.type), mutability: field.mutability)
@@ -2506,6 +2604,8 @@ extension Instruction: ProtobufConvertible {
             op = WasmAtomicStore(storeType: try convertEnum(p.storeType, WasmAtomicStoreType.allCases), offset: p.offset)
         case .wasmAtomicRmw(let p):
             op = WasmAtomicRMW(op: try convertEnum(p.op, WasmAtomicRMWType.allCases), offset: p.offset)
+        case .wasmAtomicCmpxchg(let p):
+            op = WasmAtomicCmpxchg(op: try convertEnum(p.op, WasmAtomicCmpxchgType.allCases), offset: p.offset)
         case .wasmAnyConvertExtern(_):
             op = WasmAnyConvertExtern()
         case .wasmExternConvertAny(_):

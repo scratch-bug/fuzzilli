@@ -35,6 +35,7 @@ public let codeGeneratorWeights = [
     "ObjectConstructorGenerator":               10,
     "ClassDefinitionGenerator":                 20,
     "TrivialFunctionGenerator":                 10,
+    "TimeZoneIdGenerator":                      5,
 
     // Regular code generators.
     "ThisGenerator":                            3,
@@ -42,9 +43,14 @@ public let codeGeneratorWeights = [
     "FunctionWithArgumentsAccessGenerator":     2,
     "BuiltinGenerator":                         10,
     "BuiltinOverwriteGenerator":                3,
+    "BuiltinObjectPrototypeCallGenerator":      5,
+    "BuiltinTemporalGenerator":                 4,
+    "BuiltinIntlGenerator":                     4,
     "LoadNewTargetGenerator":                   3,
     "DisposableVariableGenerator":              5,
     "AsyncDisposableVariableGenerator":         5,
+    "HexGenerator":                             2,
+    "Base64Generator":                          2,
 
     "ObjectLiteralGenerator":                   10,
     // The following generators determine how frequently different
@@ -58,14 +64,15 @@ public let codeGeneratorWeights = [
     "ObjectLiteralComputedMethodGenerator":     3,
     "ObjectLiteralGetterGenerator":             3,
     "ObjectLiteralSetterGenerator":             3,
-
-    // The following generators determine how frequently different
-    // types of fields are generated in class definitions.
-    "ClassConstructorGenerator":                10,   // Will only run if no constructor exists yet
+//
+//    // The following generators determine how frequently different
+//    // types of fields are generated in class definitions.
+    "ClassConstructorGenerator":                10,
     "ClassInstancePropertyGenerator":           5,
     "ClassInstanceElementGenerator":            5,
     "ClassInstanceComputedPropertyGenerator":   5,
     "ClassInstanceMethodGenerator":             10,
+    "ClassInstanceComputedMethodGenerator":     5,
     "ClassInstanceGetterGenerator":             3,
     "ClassInstanceSetterGenerator":             3,
     "ClassStaticPropertyGenerator":             3,
@@ -73,6 +80,7 @@ public let codeGeneratorWeights = [
     "ClassStaticComputedPropertyGenerator":     3,
     "ClassStaticInitializerGenerator":          3,
     "ClassStaticMethodGenerator":               5,
+    "ClassStaticComputedMethodGenerator":       3,
     "ClassStaticGetterGenerator":               2,
     "ClassStaticSetterGenerator":               2,
     "ClassPrivateInstancePropertyGenerator":    5,
@@ -171,7 +179,9 @@ public let codeGeneratorWeights = [
     "SwitchCaseBreakGenerator":                 5,
     "LoopBreakGenerator":                       5,
     "ContinueGenerator":                        5,
+    "TryCatchFinallyGenerator":                 5,
     "TryCatchGenerator":                        5,
+    "TryFinallyGenerator":                      5,
     "ThrowGenerator":                           1,
     "BlockStatementGenerator":                  1,
 
@@ -214,18 +224,28 @@ public let codeGeneratorWeights = [
     // This weight is important as we need to have a module for the other generators to work.
     // As they all require .wasm context.
     "WasmModuleGenerator":                      35,
-    "WasmTypeAndModuleGenerator":               35,
     "WasmDefineMemoryGenerator":                8,
+    "WasmDefineDataSegmentGenerator":           8,
+    "WasmDropDataSegmentGenerator":             5,
     "WasmMemoryLoadGenerator":                  10,
     "WasmMemoryStoreGenerator":                 10,
     "WasmAtomicLoadGenerator":                  10,
     "WasmAtomicStoreGenerator":                 10,
     "WasmAtomicRMWGenerator":                   10,
+    "WasmAtomicCmpxchgGenerator":               10,
     "WasmMemorySizeGenerator":                  5,
     "WasmMemoryGrowGenerator":                  1,
+    "WasmMemoryCopyGenerator":                  5,
     "WasmMemoryFillGenerator":                  5,
+    "WasmMemoryInitGenerator":                  5,
     "WasmDefineGlobalGenerator":                2,
     "WasmDefineTableGenerator":                 2,
+    // TODO(427115604): update onece both init and copy instructions are implemented.
+    "WasmDefineElementSegmentGenerator":        1,
+    // TODO(427115604): update onece both init and copy instructions are implemented.
+    "WasmDropElementSegmentGenerator":          1,
+    "WasmTableSizeGenerator":                   5,
+    "WasmTableGrowGenerator":                   1,
     "WasmGlobalStoreGenerator":                 2,
     "WasmGlobalLoadGenerator":                  2,
     "WasmReassignmentGenerator":                2,
@@ -322,9 +342,11 @@ public let codeGeneratorWeights = [
 
     // Wasm-gc type generators
     // These run in the javascript context and define types to be used within wasm modules.
-    "WasmRecursiveTypeGroupGenerator":          5,
+    "WasmTypeGroupGenerator":                   5,
     "WasmArrayTypeGenerator":                   5,
     "WasmStructTypeGenerator":                  5,
+    "WasmSelfReferenceGenerator":               5,
+    "WasmForwardReferenceGenerator":            5,
 
     // Wasm-gc generators
     "WasmArrayNewGenerator":                    5,

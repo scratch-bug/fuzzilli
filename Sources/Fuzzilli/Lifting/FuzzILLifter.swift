@@ -47,7 +47,11 @@ public class FuzzILLifter: Lifter {
             w.emit("\(output()) <- LoadFloat '\(op.value)'")
 
         case .loadString(let op):
-            w.emit("\(output()) <- LoadString '\(op.value)'")
+            if let customName = op.customName {
+                w.emit("\(output()) <- LoadString '\(op.value)' \(customName)")
+            } else {
+                w.emit("\(output()) <- LoadString '\(op.value)'")
+            }
 
         case .loadRegExp(let op):
             w.emit("\(output()) <- LoadRegExp '\(op.pattern)' '\(op.flags.asString())'")
@@ -73,6 +77,12 @@ public class FuzzILLifter: Lifter {
             } else {
                 w.emit("\(output()) <- CreateNamedVariable '\(op.variableName)', '\(op.declarationMode)'")
             }
+
+        case .createNamedDisposableVariable(let op):
+            w.emit("\(output()) <- CreateNamedDisposableVariable '\(op.variableName)', \(input(0))")
+
+        case .createNamedAsyncDisposableVariable(let op):
+            w.emit("\(output()) <- CreateNamedAsyncDisposableVariable '\(op.variableName)', \(input(0))")
 
         case .loadDisposableVariable:
             w.emit("\(output()) <- LoadDisposableVariable \(input(0))")
@@ -187,6 +197,15 @@ public class FuzzILLifter: Lifter {
             w.decreaseIndentionLevel()
             w.emit("EndClassInstanceMethod")
 
+        case .beginClassInstanceComputedMethod:
+            let params = instr.innerOutputs.map(lift).joined(separator: ", ")
+            w.emit("BeginClassInstanceComputedMethod \(input(0)) -> \(params)")
+            w.increaseIndentionLevel()
+
+        case .endClassInstanceComputedMethod:
+            w.decreaseIndentionLevel()
+            w.emit("EndClassInstanceComputedMethod")
+
         case .beginClassInstanceGetter(let op):
             let params = instr.innerOutputs.map(lift).joined(separator: ", ")
             w.emit("BeginClassInstanceGetter `\(op.propertyName)` -> \(params)")
@@ -242,6 +261,15 @@ public class FuzzILLifter: Lifter {
         case .endClassStaticMethod:
             w.decreaseIndentionLevel()
             w.emit("EndClassStaticMethod")
+
+        case .beginClassStaticComputedMethod:
+            let params = instr.innerOutputs.map(lift).joined(separator: ", ")
+            w.emit("BeginClassStaticComputedMethod \(input(0)) -> \(params)")
+            w.increaseIndentionLevel()
+
+        case .endClassStaticComputedMethod:
+            w.decreaseIndentionLevel()
+            w.emit("EndClassStaticComputedMethod")
 
         case .beginClassStaticGetter(let op):
             let params = instr.innerOutputs.map(lift).joined(separator: ", ")
@@ -328,7 +356,8 @@ public class FuzzILLifter: Lifter {
             w.emit("\(output()) <- \(opcode) \(input(0)), '\(op.propertyName)'")
 
         case .setProperty(let op):
-            w.emit("SetProperty \(input(0)), '\(op.propertyName)', \(input(1))")
+            let opcode = op.isGuarded ? "SetProperty (guarded)" : "SetProperty"
+            w.emit("\(opcode) \(input(0)), '\(op.propertyName)', \(input(1))")
 
         case .updateProperty(let op):
             w.emit("UpdateProperty \(input(0)), '\(op.op.token)', \(input(1))")
@@ -821,6 +850,18 @@ public class FuzzILLifter: Lifter {
             let isTable64Str = op.isTable64 ? ", table64" : ""
             w.emit("\(output()) <- WasmDefineTable \(op.elementType)\(isTable64Str), (\(op.limits.min), \(String(describing: op.limits.max))), [\(entries)]")
 
+        case .wasmDefineElementSegment(_):
+            w.emit("\(output()) <- WasmDefineElementSegment [...]")
+
+        case .wasmDropElementSegment:
+            w.emit("WasmDropElementSegment \(input(0))")
+
+        case .wasmTableInit:
+            w.emit("WasmTableInit \(input(0)), \(input(1)), \(input(2)), \(input(3)), \(input(4))")
+
+        case .wasmTableCopy:
+            w.emit("WasmTableCopy \(input(0)), \(input(1)), \(input(2)), \(input(3)), \(input(4))")
+
         case .wasmDefineMemory(let op):
             assert(op.wasmMemory.isWasmMemoryType)
             let mem = op.wasmMemory.wasmMemoryType!
@@ -828,6 +869,9 @@ public class FuzzILLifter: Lifter {
             let isMem64Str = mem.isMemory64 ? " memory64" : ""
             let sharedStr = mem.isShared ? " shared" : ""
             w.emit("\(output()) <- WasmDefineMemory [\(mem.limits.min),\(maxPagesStr)],\(isMem64Str)\(sharedStr)")
+
+        case .wasmDefineDataSegment(_):
+            w.emit("\(output()) <- WasmDefineDataSegment [...]")
 
         case .wasmDefineTag(let op):
             w.emit("\(output()) <- WasmDefineTag \(op.parameterTypes)")
@@ -840,6 +884,12 @@ public class FuzzILLifter: Lifter {
 
         case .wasmTableSet(_):
             w.emit("WasmTabletSet \(input(0))[\(input(1))] <- \(input(2))")
+
+        case .wasmTableSize(_):
+            w.emit("\(output()) <- WasmTableSize \(input(0))")
+
+        case .wasmTableGrow(_):
+            w.emit("\(output()) <- WasmTableGrow \(input(0)), \(input(1)), \(input(2))")
 
         case .wasmMemoryLoad(let op):
             w.emit("\(output()) <- WasmMemoryLoad '\(op.loadType)' \(input(0))[\(input(1)) + \(op.staticOffset)]")
@@ -856,6 +906,9 @@ public class FuzzILLifter: Lifter {
         case .wasmAtomicRMW(let op):
             w.emit("\(output()) <- WasmAtomicRMW \(input(0))[\(input(1)) + \(op.offset)] \(op.op) \(input(2))")
 
+        case .wasmAtomicCmpxchg(let op):
+            w.emit("\(output()) <- WasmAtomicCmpxchg \(input(0))[\(input(1)) + \(op.offset)], \(input(2)), \(input(3)) [\(op.op)]")
+
         case .wasmMemorySize(_):
             w.emit("\(output()) <- WasmMemorySize \(input(0))")
 
@@ -863,7 +916,16 @@ public class FuzzILLifter: Lifter {
             w.emit("\(output()) <- WasmMemoryGrow \(input(0)), \(input(1))")
 
         case .wasmMemoryFill(_):
-            w.emit("WasmMemoryFill \(input(0))")
+            w.emit("WasmMemoryFill \(input(0)), \(input(1)), \(input(2)), \(input(3))")
+
+        case .wasmMemoryCopy(_):
+            w.emit("WasmMemoryCopy \(input(0)), \(input(1)), \(input(2)), \(input(3)), \(input(4))")
+
+        case .wasmMemoryInit(_):
+            w.emit("WasmMemoryInit \(input(0)), \(input(1)), \(input(2)), \(input(3)), \(input(4))")
+
+        case .wasmDropDataSegment(_):
+            w.emit("WasmDropDataSegment \(input(0))")
 
         case .wasmStoreGlobal(_):
             w.emit("WasmStoreGlobal \(input(0)) <- \(input(1))")
@@ -1287,6 +1349,10 @@ public class FuzzILLifter: Lifter {
             let inputs = instr.inputs.map(lift).joined(separator: ", ")
             let outputs = instr.outputs.map(lift).joined(separator: ", ")
             w.emit("\(outputs) <- WasmEndTypeGroup [\(inputs)]")
+
+        case .wasmDefineSignatureType(let op):
+            let inputs = instr.inputs.map(lift).joined(separator: ", ")
+            w.emit("\(output()) <- WasmDefineSignatureType(\(op.signature)) [\(inputs)]")
 
         case .wasmDefineArrayType(let op):
             let typeInput = op.elementType.requiredInputCount() == 1 ? " \(input(0))" : ""

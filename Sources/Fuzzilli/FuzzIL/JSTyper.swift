@@ -432,12 +432,67 @@ public struct JSTyper: Analyzer {
         }
     }
 
+    mutating func addSignatureType(def: Variable, signature: WasmSignature, inputs: ArraySlice<Variable>) {
+        var inputs = inputs.makeIterator()
+        let tgIndex = isWithinTypeGroup ? typeGroups.count - 1 : -1
+
+        // Temporary variable to use by the resolveType capture. It would be nicer to use
+        // higher-order functions for this but resolveType has to be a mutating func which doesn't
+        // seem to work well with escaping functions.
+        var isParameter = true
+        let resolveType = { (i: Int, paramType: ILType) in
+            if paramType.requiredInputCount() == 0 {
+                return paramType
+            }
+            assert(paramType.Is(.wasmRef(.Index(), nullability: true)))
+            let typeDef = inputs.next()!
+            let elementDesc = type(of: typeDef).wasmTypeDefinition!.description!
+            if elementDesc == .selfReference {
+                // Register a resolver callback. See `addArrayType` for details.
+                if isParameter {
+                    selfReferences[typeDef, default: []].append({typer, replacement in
+                        let desc = typer.type(of: def).wasmTypeDefinition!.description as! WasmSignatureTypeDescription
+                        var params = desc.signature.parameterTypes
+                        params[i] = typer.type(of: replacement ?? def)
+                        desc.signature = params => desc.signature.outputTypes
+                    })
+                } else {
+                    selfReferences[typeDef, default: []].append({typer, replacement in
+                        let desc = typer.type(of: def).wasmTypeDefinition!.description as! WasmSignatureTypeDescription
+                        var outputTypes = desc.signature.outputTypes
+                        let nullability = outputTypes[i].wasmReferenceType!.nullability
+                        outputTypes[i] = typer.type(of: replacement ?? def).wasmTypeDefinition!.getReferenceTypeTo(nullability: nullability)
+                        desc.signature = desc.signature.parameterTypes => outputTypes
+                    })
+                }
+
+            }
+            registerTypeGroupDependency(from: tgIndex, to: elementDesc.typeGroupIndex)
+            return type(of: typeDef).wasmTypeDefinition!
+                .getReferenceTypeTo(nullability: paramType.wasmReferenceType!.nullability)
+        }
+
+        let resolvedParameterTypes = signature.parameterTypes.enumerated().map(resolveType)
+        isParameter = false // TODO(mliedtke): Is there a nicer way to capture this?
+        let resolvedOutputTypes = signature.outputTypes.enumerated().map(resolveType)
+        set(def, .wasmTypeDef(description: WasmSignatureTypeDescription(signature: resolvedParameterTypes => resolvedOutputTypes, typeGroupIndex: tgIndex)))
+        if isWithinTypeGroup {
+            typeGroups[typeGroups.count - 1].append(def)
+        }
+    }
+
     mutating func addArrayType(def: Variable, elementType: ILType, mutability: Bool, elementRef: Variable? = nil) {
         let tgIndex = isWithinTypeGroup ? typeGroups.count - 1 : -1
         let resolvedElementType: ILType
         if let elementRef = elementRef {
             let elementNullability = elementType.wasmReferenceType!.nullability
-            let elementDesc = type(of: elementRef).wasmTypeDefinition!.description!
+            let typeDefType = type(of: elementRef)
+            guard let elementDesc = typeDefType.wasmTypeDefinition?.description  else {
+                // TODO(mliedtke): Investigate. The `typeDefType` should be `.wasmTypeDef`.
+                // The `elementType` should be `.wasmRef(.Index)`?
+                let missesDef = typeDefType.wasmTypeDefinition != nil
+                fatalError("Missing \(missesDef ? "definition" : "description") for type definition type \(typeDefType), elementType = \(elementType)")
+            }
             if elementDesc == .selfReference {
                 // Register a "resolver" callback that does one of the two:
                 // 1) If replacement == nil, it replaces the .selfReference with the "outer" array
@@ -474,7 +529,12 @@ public struct JSTyper: Analyzer {
             let (field, fieldTypeRef) = fieldWithInput
             if let fieldTypeRef {
                 let fieldNullability = field.type.wasmReferenceType!.nullability
-                let fieldTypeDesc = type(of: fieldTypeRef).wasmTypeDefinition!.description!
+                let typeDefType = type(of: fieldTypeRef)
+                guard let fieldTypeDesc = typeDefType.wasmTypeDefinition?.description  else {
+                    // TODO(mliedtke): Investigate.
+                    let missesDef = typeDefType.wasmTypeDefinition != nil
+                    fatalError("Missing \(missesDef ? "definition" : "description") for type definition type \(typeDefType), field.type = \(field.type)")
+                }
                 if fieldTypeDesc == .selfReference {
                     // Register a resolver callback. See `addArrayType` for details.
                     selfReferences[fieldTypeRef, default: []].append({typer, replacement in
@@ -649,7 +709,7 @@ public struct JSTyper: Analyzer {
             case .wasmSimdExtractLane(let op):
                 setType(of: instr.output, to: op.kind.laneType())
             case .wasmDefineGlobal(let op):
-                let type = ILType.object(ofGroup: "WasmGlobal", withProperties: ["value"], withWasmType: WasmGlobalType(valueType: op.wasmGlobal.toType(), isMutable: op.isMutable))
+                let type = ILType.object(ofGroup: "WasmGlobal", withProperties: ["value"], withMethods: ["valueOf"], withWasmType: WasmGlobalType(valueType: op.wasmGlobal.toType(), isMutable: op.isMutable))
                 dynamicObjectGroupManager.addWasmGlobal(withType: type, forDefinition: instr, forVariable: instr.output)
                 setType(of: instr.output, to: type)
             case .wasmDefineTable(let op):
@@ -662,9 +722,21 @@ public struct JSTyper: Analyzer {
                     let jsSignature = ProgramBuilder.convertWasmSignatureToJsSignature(entry.signature)
                     dynamicObjectGroupManager.addWasmFunction(withSignature: jsSignature, forDefinition: definingInstruction, forVariable: instr.input(idx))
                 }
+            case .wasmDefineElementSegment(let op):
+                setType(of: instr.output, to: .wasmElementSegment(segmentLength: Int(op.size)))
+            case .wasmDropElementSegment(_):
+                type(of: instr.input(0)).wasmElementSegmentType!.markAsDropped()
+            case .wasmTableInit(_),
+                 .wasmTableCopy(_):
+                // TODO(427115604): - implement both init and copy instructions.
+                break
             case .wasmDefineMemory(let op):
                 setType(of: instr.output, to: op.wasmMemory)
                 registerWasmMemoryUse(for: instr.output)
+            case .wasmDefineDataSegment(let op):
+                setType(of: instr.output, to: .wasmDataSegment(segmentLength: op.segment.count))
+            case .wasmDropDataSegment(_):
+                type(of: instr.input(0)).wasmDataSegmentType!.markAsDropped()
             case .wasmDefineTag(let op):
                 setType(of: instr.output, to: .object(ofGroup: "WasmTag", withWasmType: WasmTagType(op.parameterTypes)))
                 dynamicObjectGroupManager.addWasmTag(withType: type(of: instr.output), forDefinition: instr, forVariable: instr.output)
@@ -685,6 +757,12 @@ public struct JSTyper: Analyzer {
             case .wasmTableSet(_):
                 let definingInstruction = defUseAnalyzer.definition(of: instr.input(0))
                 dynamicObjectGroupManager.addWasmTable(withType: type(of: instr.input(0)), forDefinition: definingInstruction, forVariable: instr.input(0))
+            case .wasmTableSize(_),
+                 .wasmTableGrow(_):
+                let isTable64 = type(of: instr.input(0)).wasmTableType?.isTable64 ?? false
+                let definingInstruction = defUseAnalyzer.definition(of: instr.input(0))
+                dynamicObjectGroupManager.addWasmTable(withType: type(of: instr.input(0)), forDefinition: definingInstruction, forVariable: instr.input(0))
+                setType(of: instr.output, to: isTable64 ? .wasmi64 : .wasmi32)
             case .wasmMemoryStore(_):
                 registerWasmMemoryUse(for: instr.input(0))
             case .wasmMemoryLoad(let op):
@@ -697,7 +775,10 @@ public struct JSTyper: Analyzer {
                 registerWasmMemoryUse(for: instr.input(0))
             case .wasmAtomicRMW(let op):
                 registerWasmMemoryUse(for: instr.input(0))
-                setType(of: instr.output, to: op.op.type)
+                setType(of: instr.output, to: op.op.type())
+            case .wasmAtomicCmpxchg(let op):
+                registerWasmMemoryUse(for: instr.input(0))
+                setType(of: instr.output, to: op.op.type())
             case .wasmMemorySize(_),
                  .wasmMemoryGrow(_):
                 let isMemory64 = type(of: instr.input(0)).wasmMemoryType?.isMemory64 ?? false
@@ -1137,9 +1218,11 @@ public struct JSTyper: Analyzer {
              .beginConstructor,
              .beginClassConstructor,
              .beginClassInstanceMethod,
+             .beginClassInstanceComputedMethod,
              .beginClassInstanceGetter,
              .beginClassInstanceSetter,
              .beginClassStaticMethod,
+             .beginClassStaticComputedMethod,
              .beginClassStaticGetter,
              .beginClassStaticSetter,
              .beginClassPrivateInstanceMethod,
@@ -1159,9 +1242,11 @@ public struct JSTyper: Analyzer {
              .endConstructor,
              .endClassConstructor,
              .endClassInstanceMethod,
+             .endClassInstanceComputedMethod,
              .endClassInstanceGetter,
              .endClassInstanceSetter,
              .endClassStaticMethod,
+             .endClassStaticComputedMethod,
              .endClassStaticGetter,
              .endClassStaticSetter,
              .endClassPrivateInstanceMethod,
@@ -1336,8 +1421,17 @@ public struct JSTyper: Analyzer {
         case .loadFloat:
             set(instr.output, .float)
 
-        case .loadString:
-            set(instr.output, .jsString)
+        case .loadString(let op):
+            if let customName = op.customName {
+                if let enumTy = environment.getEnum(ofName: customName) {
+                    set(instr.output, enumTy)
+                } else {
+                    set(instr.output, .namedString(ofName: customName))
+                }
+
+            } else {
+                set(instr.output, .jsString)
+            }
 
         case .loadBoolean:
             set(instr.output, .boolean)
@@ -1367,6 +1461,12 @@ public struct JSTyper: Analyzer {
             set(instr.output, type(ofInput: 0))
 
         case .loadAsyncDisposableVariable:
+            set(instr.output, type(ofInput: 0))
+
+        case .createNamedDisposableVariable:
+            set(instr.output, type(ofInput: 0))
+
+        case .createNamedAsyncDisposableVariable:
             set(instr.output, type(ofInput: 0))
 
         case .loadNewTarget:
@@ -1432,6 +1532,11 @@ public struct JSTyper: Analyzer {
             processParameterDeclarations(instr.innerOutputs(1...), parameters: inferSubroutineParameterList(of: op, at: instr.index))
             dynamicObjectGroupManager.addMethod(methodName: op.methodName, of: .jsClass)
 
+        case .beginClassInstanceComputedMethod(let op):
+            // The first inner output is the explicit |this|
+            set(instr.innerOutput(0), dynamicObjectGroupManager.top.instanceType)
+            processParameterDeclarations(instr.innerOutputs(1...), parameters: inferSubroutineParameterList(of: op, at: instr.index))
+
         case .beginClassInstanceGetter(let op):
             // The first inner output is the explicit |this| parameter for the constructor
             set(instr.innerOutput(0), dynamicObjectGroupManager.top.instanceType)
@@ -1458,6 +1563,11 @@ public struct JSTyper: Analyzer {
             set(instr.innerOutput(0), dynamicObjectGroupManager.activeClasses.top.objectGroup.instanceType)
             processParameterDeclarations(instr.innerOutputs(1...), parameters: inferSubroutineParameterList(of: op, at: instr.index))
             dynamicObjectGroupManager.addClassStaticMethod(methodName: op.methodName)
+
+        case .beginClassStaticComputedMethod(let op):
+            // The first inner output is the explicit |this|
+            set(instr.innerOutput(0), dynamicObjectGroupManager.activeClasses.top.objectGroup.instanceType)
+            processParameterDeclarations(instr.innerOutputs(1...), parameters: inferSubroutineParameterList(of: op, at: instr.index))
 
         case .beginClassStaticGetter(let op):
             // The first inner output is the explicit |this| parameter for the constructor
@@ -1710,7 +1820,7 @@ public struct JSTyper: Analyzer {
 
         // TODO: also add other macro instructions here.
         case .createWasmGlobal(let op):
-            set(instr.output, .object(ofGroup: "WasmGlobal", withProperties: ["value"], withWasmType: WasmGlobalType(valueType: op.value.toType(), isMutable: op.isMutable)))
+            set(instr.output, .object(ofGroup: "WasmGlobal", withProperties: ["value"], withMethods: ["valueOf"], withWasmType: WasmGlobalType(valueType: op.value.toType(), isMutable: op.isMutable)))
 
         case .createWasmMemory(let op):
             set(instr.output, .wasmMemory(limits: op.memType.limits, isShared: op.memType.isShared, isMemory64: op.memType.isMemory64))
@@ -1772,6 +1882,9 @@ public struct JSTyper: Analyzer {
             }
             finishTypeGroup()
 
+        case .wasmDefineSignatureType(let op):
+            addSignatureType(def: instr.output, signature: op.signature, inputs: instr.inputs)
+
         case .wasmDefineArrayType(let op):
             let elementRef = op.elementType.requiredInputCount() == 1 ? instr.input(0) : nil
             addArrayType(def: instr.output, elementType: op.elementType, mutability: op.mutability, elementRef: elementRef)
@@ -1799,17 +1912,11 @@ public struct JSTyper: Analyzer {
                 for resolve in resolvers {
                     resolve(&self, instr.input(1))
                 }
-                // Remove the resolvers as the usages have been updated.
-                selfReferences.removeValue(forKey: instr.input(0))
+                // Reset the resolvers as the usages have been updated. The self reference can now
+                // be used as a self reference again or resolved to a forward reference at a later
+                // point in time again.
+                selfReferences[instr.input(0)] = []
             }
-            // Invalidate the type of the forward reference. A ForwardOrSelfReference operation
-            // should not be used any more after being resolved.
-            // TODO(mliedtke): Replace this with a simple set and remove the assert that prevents
-            // using .nothing? Check this logic especially with respect to code generation and
-            // mutation: What happens if we insert a `ResolveForwardReference` via a mutator and
-            // there already is a `ResolveForwardReference` defined at a later point in the IL?
-            // set(instr.input(0), .nothing)
-            state.updateType(of: instr.input(0), to: .nothing)
 
         default:
             // Only simple instructions and block instruction with inner outputs are handled here

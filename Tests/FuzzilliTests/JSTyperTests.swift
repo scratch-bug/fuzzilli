@@ -1263,17 +1263,17 @@ class JSTyperTests: XCTestCase {
             XCTAssertFalse(b.type(of: structType).Is(b.type(of: structType2)))
             XCTAssertFalse(b.type(of: structType2).Is(b.type(of: structType)))
             let desc = b.type(of: structType).wasmTypeDefinition!.description! as! WasmStructTypeDescription
-            XCTAssert(desc.fields.count == 2)
-            XCTAssert(desc.fields[0].type == .wasmi32)
-            XCTAssert(desc.fields[1].type == .wasmi64)
+            XCTAssertEqual(desc.fields.count, 2)
+            XCTAssertEqual(desc.fields[0].type, .wasmi32)
+            XCTAssertEqual(desc.fields[1].type, .wasmi64)
             return [structType, structType2]
         }[0]
 
         XCTAssert(b.type(of: structType).Is(.wasmTypeDef()))
         let desc = b.type(of: structType).wasmTypeDefinition!.description! as! WasmStructTypeDescription
-        XCTAssert(desc.fields.count == 2)
-        XCTAssert(desc.fields[0].type == .wasmi32)
-        XCTAssert(desc.fields[1].type == .wasmi64)
+        XCTAssertEqual(desc.fields.count, 2)
+        XCTAssertEqual(desc.fields[0].type, .wasmi32)
+        XCTAssertEqual(desc.fields[1].type, .wasmi64)
     }
 
     func testTypingOfDeletedMethods() {
@@ -1519,7 +1519,7 @@ class JSTyperTests: XCTestCase {
         let b = fuzzer.makeBuilder()
 
         let wasmGlobalf64: Variable = b.createWasmGlobal(value: .wasmf64(1337), isMutable: false)
-        XCTAssertEqual(b.type(of: wasmGlobalf64), .object(ofGroup: "WasmGlobal", withProperties: ["value"], withWasmType: WasmGlobalType(valueType: ILType.wasmf64, isMutable: false)))
+        XCTAssertEqual(b.type(of: wasmGlobalf64), .object(ofGroup: "WasmGlobal", withProperties: ["value"], withMethods: ["valueOf"], withWasmType: WasmGlobalType(valueType: ILType.wasmf64, isMutable: false)))
 
         let maxPages: Int? = isShared ? 4 : nil
         let memory = b.createWasmMemory(minPages: 1, maxPages: maxPages, isShared: isShared)
@@ -1612,10 +1612,10 @@ class JSTyperTests: XCTestCase {
         XCTAssertEqual(reexportedFunction, [[] => .object(ofGroup: "_fuzz_Object0")])
 
         let glob0 = b.getProperty("wg0", of: exports)
-        XCTAssertEqual(b.type(of: glob0), .object(ofGroup: "WasmGlobal", withProperties: ["value"], withWasmType: WasmGlobalType(valueType: .wasmi64, isMutable: true)))
+        XCTAssertEqual(b.type(of: glob0), .object(ofGroup: "WasmGlobal", withProperties: ["value"], withMethods: ["valueOf"], withWasmType: WasmGlobalType(valueType: .wasmi64, isMutable: true)))
 
         let glob1 = b.getProperty("iwg0", of: exports)
-        XCTAssertEqual(b.type(of: glob1), .object(ofGroup: "WasmGlobal", withProperties: ["value"], withWasmType: WasmGlobalType(valueType: .wasmf64, isMutable: false)))
+        XCTAssertEqual(b.type(of: glob1), .object(ofGroup: "WasmGlobal", withProperties: ["value"], withMethods: ["valueOf"], withWasmType: WasmGlobalType(valueType: .wasmf64, isMutable: false)))
 
         let mem0 = b.getProperty("wm0", of: exports)
         let memType = ILType.wasmMemory(limits: Limits(min: 3, max: maxPages), isShared: isShared)
@@ -1679,5 +1679,229 @@ class JSTyperTests: XCTestCase {
         XCTAssert(b.type(of: sharedArrayBufferProto).Is(.object(ofGroup: "SharedArrayBuffer.prototype")))
         let grow = b.getProperty("grow", of: sharedArrayBufferProto)
         XCTAssertEqual(b.type(of: grow), .unboundFunction([.number] => .undefined, receiver: .jsSharedArrayBuffer))
+
+        // Temporal objects
+        let temporalBuiltin = b.createNamedVariable(forBuiltin: "Temporal")
+        XCTAssert(b.type(of: temporalBuiltin).Is(.object(ofGroup: "Temporal")))
+        let instantBuiltin = b.getProperty("Instant", of: temporalBuiltin)
+        XCTAssert(b.type(of: instantBuiltin).Is(.object(ofGroup: "TemporalInstantConstructor")))
+        let instantProto = b.getProperty("prototype", of: instantBuiltin)
+        XCTAssert(b.type(of: instantProto).Is(.object(ofGroup: "Temporal.Instant.prototype")))
+        let instantRound = b.getProperty("round", of: instantProto)
+        XCTAssert(b.type(of: instantRound).Is(.unboundFunction([.plain(OptionsBag.jsTemporalDifferenceSettingOrRoundTo.group.instanceType)] => ILType.jsTemporalInstant,
+                                              receiver: .jsTemporalInstant)))
+        let randomString = b.randomVariable(forUseAs: .string)
+        let fromCall = b.callMethod("from", on: instantBuiltin, withArgs: [randomString])
+        XCTAssert(b.type(of: fromCall).Is(.jsTemporalInstant))
+
+
+        // We don't test Instant's prototype, since Instant only has nontrivial methods that
+        // use options bag types that are still in flux.
+
+        let durationBuiltin = b.getProperty("Duration", of: temporalBuiltin)
+        XCTAssert(b.type(of: durationBuiltin).Is(.object(ofGroup: "TemporalDurationConstructor")))
+        let durationProto = b.getProperty("prototype", of: durationBuiltin)
+        XCTAssert(b.type(of: durationProto).Is(.object(ofGroup: "Temporal.Duration.prototype")))
+        let negated = b.getProperty("negated", of: durationProto)
+        XCTAssertEqual(b.type(of: negated), .unboundFunction([] => .jsTemporalDuration, receiver: .jsTemporalDuration))
+
+
+    }
+
+    func testTemporalRelativeTo() {
+        var foundZDT = false
+        var foundDT = false
+        var foundDate = false
+        var foundString = false
+        // Test that relativeTo arguments are correctly generated
+        // Annoyingly, we may generate undefined/.jsAnything here since the field may not exist.
+        // We just call this a large number of times until we find everything.
+        for i in 1..<100 {
+            let fuzzer = makeMockFuzzer()
+            let b = fuzzer.makeBuilder()
+            let temporalBuiltin = b.createNamedVariable(forBuiltin: "Temporal")
+            let durationBuiltin = b.getProperty("Duration", of: temporalBuiltin)
+            let duration = b.callMethod("from", on: durationBuiltin, withArgs: [b.loadString("P10D")])
+            XCTAssert(b.type(of: duration).Is(.jsTemporalDuration))
+            let signature = chooseUniform(from: b.methodSignatures(of: "round", on: duration))
+            let args = b.findOrGenerateArguments(forSignature: signature)
+            let relativeTo = b.getProperty("relativeTo", of: args[0])
+            let type = b.type(of: relativeTo)
+            if type.Is(.string) {
+                foundString = true
+            } else if type.Is(.jsTemporalZonedDateTime) {
+                XCTAssertEqual(type.group, "Temporal.ZonedDateTime")
+                foundZDT = true
+            } else if type.Is(.jsTemporalPlainDateTime) {
+                XCTAssertEqual(type.group, "Temporal.PlainDateTime")
+                foundDT = true
+            } else if type.Is(.jsTemporalPlainDate) {
+                XCTAssertEqual(type.group, "Temporal.PlainDate")
+                foundDate = true
+            } else {
+                // If we got here, it must be because we never generated a relativeTo
+                // argument
+                let obj = b.type(of: args[0])
+                XCTAssert(!obj.properties.contains("relativeTo"))
+            }
+
+            // We don't want to run the test for 100 iterations, we only
+            // want to run it for ~20 to ensure enough paths get tested,
+            // and only if we do not generate all paths do we wish to run it more.
+            if foundZDT && foundString && foundDate && foundDT && i > 20 {
+                break
+            }
+        }
+        XCTAssert(foundZDT && foundString && foundDate && foundDT)
+    }
+
+    func testWebAssemblyBuiltins() {
+        let fuzzer = makeMockFuzzer()
+        let b = fuzzer.makeBuilder()
+
+        let wasm = b.createNamedVariable(forBuiltin: "WebAssembly")
+        XCTAssert(b.type(of: wasm).Is(.object(ofGroup: "WebAssembly")))
+        let wasmModuleConstructor = b.getProperty("Module", of: wasm)
+        XCTAssert(b.type(of: wasmModuleConstructor).Is(.object(ofGroup: "WebAssemblyModuleConstructor")))
+        let wasmModule = b.construct(wasmModuleConstructor) // In theory this needs arguments.
+        XCTAssert(b.type(of: wasmModule).Is(.object(ofGroup: "WebAssembly.Module")))
+
+        let wasmGlobalConstructor = b.getProperty("Global", of: wasm)
+        XCTAssert(b.type(of: wasmGlobalConstructor).Is(.object(ofGroup: "WebAssemblyGlobalConstructor")))
+        let wasmGlobal = b.construct(wasmGlobalConstructor) // In theory this needs arguments.
+        // We do not type the constructed value as globals as the "WasmGlobal" object group expects
+        // to have a WasmTypeExtension.
+        XCTAssertFalse(b.type(of: wasmGlobal).Is(.object(ofGroup: "WasmGlobal")))
+        // The high-level IL instruction produces properly typed wasm globals.
+        let realWasmGlobal = b.createWasmGlobal(value: .wasmi32(1), isMutable: true)
+        XCTAssert(b.type(of: realWasmGlobal).Is(.object(ofGroup: "WasmGlobal")))
+        XCTAssert(b.type(of: realWasmGlobal).Is(ObjectGroup.jsWasmGlobal.instanceType))
+        // The properly typed wasm globals can be used in conjunction with the
+        // WebAssembly.Global.prototype.valueOf() function.
+        let globalPrototype = b.getProperty("prototype", of: wasmGlobalConstructor)
+        let valueOf = b.getProperty("valueOf", of: globalPrototype)
+        XCTAssertEqual(b.type(of: valueOf), .unboundFunction([] => .jsAnything, receiver: .object(ofGroup: "WasmGlobal", withProperties: ["value"], withMethods: ["valueOf"])))
+
+        let wasmMemoryConstructor = b.getProperty("Memory", of: wasm)
+        let wasmMemory = b.construct(wasmMemoryConstructor) // In theory this needs arguments.
+        XCTAssertFalse(b.type(of: wasmMemory).Is(.object(ofGroup: "WasmMemory")))
+        let realWasmMemory = b.createWasmMemory(minPages: 1, maxPages: 1, isShared: false)
+        XCTAssert(b.type(of: realWasmMemory).Is(.object(ofGroup: "WasmMemory")))
+        XCTAssert(b.type(of: realWasmMemory).Is(ObjectGroup.jsWasmMemory.instanceType))
+        let memoryPrototype = b.getProperty("prototype", of: wasmMemoryConstructor)
+        let grow = b.getProperty("grow", of: memoryPrototype)
+        XCTAssert(b.type(of: grow).Is(.unboundFunction([.number] => .number, receiver: .object(ofGroup: "WasmMemory"))))
+
+        let wasmTableConstructor = b.getProperty("Table", of: wasm)
+        let wasmTable = b.construct(wasmTableConstructor) // In theory this needs arguments.
+        XCTAssertFalse(b.type(of: wasmTable).Is(.object(ofGroup: "WasmTable")))
+        let realWasmTable = b.createWasmTable(elementType: .wasmAnyRef, limits: .init(min: 0), isTable64: false)
+        XCTAssert(b.type(of: realWasmTable).Is(.object(ofGroup: "WasmTable")))
+        XCTAssert(b.type(of: realWasmTable).Is(ObjectGroup.wasmTable.instanceType))
+        let tablePrototype = b.getProperty("prototype", of: wasmTableConstructor)
+        let tableGrow = b.getProperty("grow", of: tablePrototype)
+        XCTAssert(b.type(of: tableGrow).Is(.unboundFunction([.number, .opt(.jsAnything)] => .number, receiver: .object(ofGroup: "WasmTable"))))
+
+        let wasmTagConstructor = b.getProperty("Tag", of: wasm)
+        let wasmTag = b.construct(wasmTagConstructor) // In theory this needs arguments.
+        XCTAssertFalse(b.type(of: wasmTag).Is(.object(ofGroup: "WasmTag")))
+        let realWasmTag = b.createWasmTag(parameterTypes: [.wasmi32])
+        XCTAssert(b.type(of: realWasmTag).Is(.object(ofGroup: "WasmTag")))
+        let tagPrototype = b.getProperty("prototype", of: wasmTagConstructor)
+        // WebAssembly.Tag.prototype doesn't have any properties or methods.
+        XCTAssertEqual(b.type(of: tagPrototype), .object(ofGroup: "WasmTag.prototype"))
+
+        let wasmExceptionConstructor = b.getProperty("Exception", of: wasm)
+        let wasmException = b.construct(wasmExceptionConstructor) // In theory this needs arguments.
+        XCTAssert(b.type(of: wasmException).Is(.object(ofGroup: "WebAssembly.Exception")))
+        let isResult = b.callMethod("is", on: wasmException, withArgs: [realWasmTag])
+        XCTAssertEqual(b.type(of: isResult), .boolean)
+        let exceptionPrototype = b.getProperty("prototype", of: wasmExceptionConstructor)
+        XCTAssert(b.type(of: exceptionPrototype).Is(ObjectGroup.jsWebAssemblyExceptionPrototype.instanceType))
+        let exceptionIs = b.getProperty("is", of: exceptionPrototype)
+        XCTAssert(b.type(of: exceptionIs).Is(.unboundFunction([.plain(ObjectGroup.jsWasmTag.instanceType)] => ILType.boolean, receiver: .object(ofGroup: "WebAssembly.Exception"))))
+    }
+
+    func testProducingGenerators() {
+        // Make a simple object
+        let mockEnum = ILType.enumeration(ofName: "MockEnum", withValues: ["mockValue"]);
+        let mockObject = ObjectGroup(
+            name: "MockObject",
+            instanceType: nil,
+            properties: [
+                "mockField" : mockEnum
+            ],
+            methods: [:]
+        )
+
+        // Some things to keep track of how the generator was called
+        var callCount = 0
+        var returnedVar: Variable? = nil
+        var generatedEnum: Variable? = nil
+        // A simple generator
+        func generateObject(builder: ProgramBuilder) -> Variable {
+            callCount += 1
+            let val = builder.loadEnum(mockEnum)
+            generatedEnum = val
+            let variable = builder.createObject(with: ["mockField": val])
+            returnedVar = variable
+            return variable
+        }
+
+        let mockNamedString = ILType.namedString(ofName: "NamedString");
+        func generateString() -> String {
+            callCount += 1
+            return "mockStringValue"
+        }
+
+        let fuzzer = makeMockFuzzer()
+        fuzzer.environment.registerObjectGroup(mockObject)
+        fuzzer.environment.registerEnumeration(mockEnum)
+        fuzzer.environment.addProducingGenerator(forType: mockObject.instanceType, with: generateObject)
+        fuzzer.environment.addNamedStringGenerator(forType: mockNamedString, with: generateString)
+        let b = fuzzer.makeBuilder()
+        b.buildPrefix()
+
+        // Try to get it to invoke the generator
+        let variable = b.findOrGenerateType(mockObject.instanceType)
+        // Test that the generator was invoked
+        XCTAssertEqual(callCount, 1)
+        // Test that the returned variable matches the generated one
+        XCTAssertEqual(variable, returnedVar)
+
+
+        // Try to get it to invoke the string generator
+        let variable2 = b.findOrGenerateType(mockNamedString)
+        // Test that the generator was invoked
+        XCTAssertEqual(callCount, 2)
+
+        // Test that the returned variable gets typed correctly
+        XCTAssert(b.type(of: variable2).Is(mockNamedString))
+        XCTAssertEqual(b.type(of: variable2).group, "NamedString")
+
+        // We already generated a mockEnum, look for it.
+        let foundEnum = b.randomVariable(ofType: mockEnum)!
+        // Test that it picked up the existing generated variable.
+        XCTAssertEqual(generatedEnum, foundEnum)
+
+        // Test that the returned variable gets typed correctly.
+        XCTAssert(b.type(of: foundEnum).Is(mockEnum))
+        XCTAssertEqual(b.type(of: foundEnum).group, "MockEnum")
+    }
+
+    func testFindConstructor() {
+        for ctor in ["TemporalPlainMonthDayConstructor", "DateConstructor", "PromiseConstructor", "SymbolConstructor", "TemporalZonedDateTimeConstructor"] {
+            let fuzzer = makeMockFuzzer()
+            let b = fuzzer.makeBuilder()
+            let temporalBuiltin = b.createNamedVariable(forBuiltin: "Temporal")
+            let dateCtor = b.getProperty("PlainDate", of: temporalBuiltin)
+            let requestedCtor = fuzzer.environment.type(ofGroup: ctor)
+            let result = b.findOrGenerateType(requestedCtor)
+
+            // The typer should not pick up the PlainDateConstructor we have in scope,
+            // it should instead get the ctor from the global
+            XCTAssert(result != dateCtor)
+            XCTAssert(b.type(of: result).Is(requestedCtor))
+        }
     }
 }
