@@ -1,0 +1,1 @@
+("number").localeCompare("number");

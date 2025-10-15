@@ -48,6 +48,7 @@ enum TraceEventScorer {
                 return ["[migrating"]
             }
         }
+
     }
 
     /// Returns the combined trace weight for the provided execution.

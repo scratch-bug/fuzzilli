@@ -1,0 +1,44 @@
+function hot_function(o) {
+  return o.a[o.p];
+}
+
+for (let i = 0; i < 10000; i++) {
+  hot_function({a: [1, 2, 3], p: 0});
+}
+
+try {
+  const wasm_bytes = new Uint8Array([
+    0x00, 0x61, 0x73, 0x6d, 0x01, 0x00, 0x00, 0x00, 0x01, 0x0a, 0x02, 0x60,
+    0x00, 0x00, 0x60, 0x00, 0x00, 0x02, 0x0e, 0x02, 0x01, 0x6a, 0x01, 0x66,
+    0x00, 0x00, 0x01, 0x6a, 0x01, 0x73, 0x03, 0x01, 0x01, 0x03, 0x02, 0x01,
+    0x01, 0x07, 0x08, 0x01, 0x04, 0x6d, 0x61, 0x69, 0x6e, 0x00, 0x00, 0x0a,
+    0x07, 0x01, 0x05, 0x00, 0x10, 0x00, 0x07, 0x00, 0x0b
+  ]);
+
+  const suspender = new WebAssembly.Suspender();
+  const suspender_tag = new WebAssembly.Tag({parameters: []});
+
+  let trigger_array = [42];
+  const provider = {
+    a: trigger_array,
+    get p() {
+      trigger_array[0] = 1.1;
+      return 0;
+    }
+  };
+
+  const module = new WebAssembly.Module(wasm_bytes);
+  const instance = new WebAssembly.Instance(module, {
+    j: {
+      f: () => {
+        hot_function(provider);
+      },
+      s: suspender_tag
+    }
+  });
+
+  suspender.suspendOnReturnedPromise(
+      WebAssembly.promisify(instance.exports.main)());
+} catch (e) {
+
+}

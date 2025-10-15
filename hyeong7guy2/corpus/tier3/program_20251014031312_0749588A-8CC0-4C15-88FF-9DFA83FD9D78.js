@@ -1,0 +1,1 @@
+globalThis.unescape(globalThis);

@@ -1,0 +1,1 @@
+%OptimizeFunctionOnNextCall(115);

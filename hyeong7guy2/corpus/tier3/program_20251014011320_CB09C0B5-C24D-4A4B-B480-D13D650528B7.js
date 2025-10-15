@@ -1,0 +1,3 @@
+with ([]) {
+    length - length;
+}

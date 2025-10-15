@@ -1,0 +1,1 @@
+JSON.isRawJSON(1);

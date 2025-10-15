@@ -1,0 +1,1 @@
+("🙌🏿")[1].toLocaleUpperCase();

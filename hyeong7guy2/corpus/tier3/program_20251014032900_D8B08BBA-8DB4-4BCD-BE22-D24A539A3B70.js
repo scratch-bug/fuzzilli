@@ -1,0 +1,1 @@
+WebAssembly.__proto__ = {};
