@@ -1,1 +1,0 @@
-Object.hasOwn(11);

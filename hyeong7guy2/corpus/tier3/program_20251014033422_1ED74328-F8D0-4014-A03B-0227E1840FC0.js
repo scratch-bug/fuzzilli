@@ -1,8 +1,0 @@
-function F0(a2) {
-    if (!new.target) { throw 'must be called with new'; }
-    a2++;
-    const v4 = this.constructor;
-    try { new v4(this); } catch (e) {}
-}
-new F0(F0);
-new F0();

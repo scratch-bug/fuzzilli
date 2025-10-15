@@ -1,5 +1,0 @@
-class C1 {
-}
-class C4 extends Date {
-}
-C4.UTC(C1, 9007199254740990, 9007199254740990);
