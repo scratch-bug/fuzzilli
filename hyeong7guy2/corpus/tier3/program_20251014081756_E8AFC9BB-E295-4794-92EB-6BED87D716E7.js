@@ -1,0 +1,9 @@
+for (let i2 = 0;
+    (() => {
+        for (const v5 in Object) {
+        }
+        return i2 < 10000;
+    })();
+    i2++) {
+    Math.atan2("4294967296", "4294967296");
+}

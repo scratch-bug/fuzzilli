@@ -1,0 +1,1 @@
+("🙌🏿").localeCompare(Array());

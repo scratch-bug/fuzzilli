@@ -1,0 +1,3 @@
+const v0 = [1.0,3.0,0.0,-227.58916076392484,0.42004328565961524,-1.5126910759658791e+308];
+Reflect.preventExtensions(v0);
+Reflect.apply(v0.concat, v0, Uint8ClampedArray);

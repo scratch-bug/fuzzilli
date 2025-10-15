@@ -1,0 +1,1 @@
+Intl.Segmenter.supportedLocalesOf();

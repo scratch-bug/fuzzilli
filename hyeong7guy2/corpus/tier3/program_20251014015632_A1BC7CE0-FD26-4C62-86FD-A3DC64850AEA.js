@@ -1,0 +1,1 @@
+delete WebAssembly.Global;

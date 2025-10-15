@@ -1,0 +1,2 @@
+Intl.Collator;
+gc();

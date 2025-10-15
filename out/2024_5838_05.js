@@ -1,0 +1,28 @@
+const wasmCode = new Uint8Array([
+    0x00, 0x61, 0x73, 0x6d, 0x01, 0x00, 0x00, 0x00,
+    0x01, 0x06, 0x01, 0x60, 0x01, 0x7f, 0x01, 0x7f,
+    0x02, 0x0b, 0x01, 0x01, 0x6d, 0x03, 0x69, 0x6d,
+    0x70, 0x00, 0x00,
+    0x07, 0x07, 0x01, 0x03, 0x65, 0x78, 0x70, 0x00,
+    0x00
+]);
+
+const imports = {
+    m: {
+        imp: (arg) => {
+            return arg;
+        }
+    }
+};
+
+const module = new WebAssembly.Module(wasmCode);
+const instance = new WebAssembly.Instance(module, imports);
+
+const exported_import = instance.exports.exp;
+const promising_wrapper = WebAssembly.promising(exported_import);
+
+for (let i = 0; i < 25000; i++) {
+    promising_wrapper(i);
+}
+
+promising_wrapper(42);

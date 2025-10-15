@@ -1,0 +1,32 @@
+function F0(a2, a3) {
+    if (!new.target) { throw 'must be called with new'; }
+    function f4() {
+        function f5(a6) {
+            function F8(a10, a11, a12, a13) {
+                if (!new.target) { throw 'must be called with new'; }
+            }
+            const v14 = new F8(3, F8, F0, a2);
+            function f15() {
+            }
+            f15.bind(this, F8, f5, F8);
+            function f18(a19, a20, a21) {
+                a19[Symbol.replace];
+                return f18;
+            }
+            f18(Math);
+            const v26 = f18(v14);
+            v26(3);
+            v26(f15);
+        }
+        f5(F0);
+        f5();
+        %OptimizeMaglevOnNextCall(f5);
+        return f5;
+    }
+    Object.defineProperty(this, "toString", { get: f4 });
+}
+const v31 = new F0(F0, F0);
+class C32 {
+    static [v31](a34, a35, a36) {
+    }
+}
