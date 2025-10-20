@@ -1,1 +1,0 @@
-("🙌🏿").fontcolor().replaceAll("🙌🏿");

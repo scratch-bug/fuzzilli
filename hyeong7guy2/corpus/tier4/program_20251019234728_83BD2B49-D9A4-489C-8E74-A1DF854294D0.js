@@ -1,0 +1,4 @@
+const v0 = [2.2714642113349157,-9.68614440817778e+307,7.119243574209895e+307,4.123824404733112,246.16027424519098];
+Object.preventExtensions(v0);
+Object.seal(v0);
+Array.fromAsync().then(Array, Array);

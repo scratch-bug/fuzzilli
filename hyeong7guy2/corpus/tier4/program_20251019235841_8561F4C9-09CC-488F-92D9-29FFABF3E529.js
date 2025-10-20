@@ -1,0 +1,1 @@
+("toISOString").match(/now/usgm);

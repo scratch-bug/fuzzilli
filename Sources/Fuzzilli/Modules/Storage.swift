@@ -198,11 +198,11 @@ public class Storage: Module {
     }
 
     private func corpusTierDirectory(for weight: Int) -> String {
-        if weight >= 12 {
+        if weight >= 25 {
             return corpusTier1Dir
-        } else if weight > 4 {
+        } else if weight >= 16 {
             return corpusTier2Dir
-        } else if weight > 0 {
+        } else if weight >= 7 {
             return corpusTier3Dir
         } else {
             return corpusTier4Dir

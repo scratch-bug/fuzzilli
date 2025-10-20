@@ -1,0 +1,22 @@
+function f0() {
+    let v1 = -9007199254740992;
+    class C2 {
+        constructor(a4, a5) {
+            for (let v6 = 0; v6 < 5; v6++) {
+                v6++;
+                const v8 = v6 + v1;
+                v8 >> v8;
+                super.b >>>= v8;
+                for (let i11 = 0; i11 < 1; i11++) {
+                    v1 %= i11;
+                }
+            }
+        }
+    }
+    new C2(f0, C2);
+    return f0;
+}
+f0();
+%PrepareFunctionForOptimization(f0);
+%OptimizeFunctionOnNextCall(f0);
+f0();

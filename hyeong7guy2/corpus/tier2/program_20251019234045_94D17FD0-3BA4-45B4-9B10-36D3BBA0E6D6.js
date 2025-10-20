@@ -1,0 +1,8 @@
+const v1 = class {
+}
+function f2() {
+    const v7 = new ArrayBuffer(7, { maxByteLength: 9223372036854775807 });
+    return v7;
+}
+Object.defineProperty(v1, Symbol.iterator, { writable: true, configurable: true, enumerable: true, value: f2 });
+try { new Int32Array(v1); } catch (e) {}

@@ -1,0 +1,4 @@
+const v0 = [1073741825,64569,536870888,3473,9007199254740991,859678970,-1073741824,9007199254740990];
+const v5 = new ArrayBuffer(64, { maxByteLength: 65536 });
+const v7 = new Uint32Array(v5);
+v7.set(v0);

@@ -1,0 +1,3 @@
+Float32Array[1] = 980.2954716634129;
+const v2 = new Float32Array(Float32Array);
+v2.toSorted();

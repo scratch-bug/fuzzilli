@@ -1,0 +1,3 @@
+const v1 = ([-2.2250738585072014e-308,-1.2754480537603652e+308,4.591520346264684,5.214378014935059])[2];
+Intl.maximumFractionDigits = v1;
+Intl.NumberFormat(v1, Intl);

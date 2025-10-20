@@ -1,0 +1,2 @@
+("a").normalize("NFKC");
+["NFKC",,];

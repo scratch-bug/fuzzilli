@@ -1,1 +1,0 @@
-("🙌🏿").blink().lastIndexOf();

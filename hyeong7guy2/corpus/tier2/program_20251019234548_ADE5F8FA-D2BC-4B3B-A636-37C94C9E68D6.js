@@ -1,0 +1,24 @@
+const v3 = Symbol.iterator;
+const v12 = {
+    [v3]() {
+        let v5;
+        try { v5 = this(this, v3); } catch (e) {}
+        this.a = this;
+        eval(v5);
+        const v11 = {
+            next() {
+                return { done: 10 };
+            },
+        };
+        return v11;
+    },
+};
+const v15 = new Int16Array();
+function f16() {
+    const v17 = new Date(WeakSet, Date, 882, ...v15, ...v12);
+    return v17;
+}
+f16();
+f16();
+%OptimizeFunctionOnNextCall(f16);
+f16();
