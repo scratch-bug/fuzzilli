@@ -1,9 +1,0 @@
-const v0 = [0.18758062766098227];
-v0[0] = v0;
-const v1 = v0.pop();
-function f3(a4, a5, a6) {
-    return a6;
-}
-const v8 = { type: "function" };
-const v9 = new Worker(f3, v8);
-v9.postMessage(v8, v1);

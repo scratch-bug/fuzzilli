@@ -1,1 +1,0 @@
-Intl.RelativeTimeFormat.supportedLocalesOf();

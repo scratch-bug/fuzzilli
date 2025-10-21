@@ -1,7 +1,0 @@
-try {
-    for (let i1 = 0; i1 < 25000; i1++) {
-        (i1 === 24999) ** -1.0;
-        try { Math.tanh(4); } catch (e) {}
-    }
-} catch(e14) {
-}

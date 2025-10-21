@@ -1,1 +1,0 @@
-Intl.getCanonicalLocales(["equals","string"]);

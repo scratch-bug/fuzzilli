@@ -1,9 +1,0 @@
-const v0 = /aK\1111(?:a+)*/dsg;
-for (let i2 = 129;
-    (() => {
-        const v4 = i2 < 20000;
-        v0.exec();
-        return v4;
-    })();
-    i2++) {
-}

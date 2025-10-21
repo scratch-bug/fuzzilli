@@ -1,1 +1,0 @@
-([,])["indexOf"](undefined, "indexOf");
