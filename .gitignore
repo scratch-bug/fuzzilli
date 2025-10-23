@@ -6,7 +6,8 @@ Package.resolved
 .vscode
 .*.sw?
 .swiftpm
-
+hyeong7/*
+hyeong7
 # custom GCE configuration
 Cloud/GCE/config.sh
 

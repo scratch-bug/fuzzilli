@@ -67,7 +67,7 @@ class TerminalUI {
             }
         }
 
-        fuzzer.registerEventListener(for: fuzzer.events.InterestingProgramFound) { program, origin in
+        fuzzer.registerEventListener(for: fuzzer.events.InterestingProgramFound) { program, _, _ in
             self.lastInterestingProgramFound = Date()
             if self.printNextInterestingProgram {
                 print("--------- Randomly Sampled Interesting Program -----------")

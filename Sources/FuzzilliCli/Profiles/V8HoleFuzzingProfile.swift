@@ -32,6 +32,14 @@ let v8HoleFuzzingProfile = Profile(
             "--jit-fuzzing",
             "--future",
             "--harmony",
+            "--trace-elements-transitions",
+            "--trace-normalization",
+            "--trace-gc",
+            "--trace-ic",
+            "--trace-opt",
+            "--trace-deopt",
+            "--trace-migration",
+            "--trace-generalization",
         ]
         return args
     },

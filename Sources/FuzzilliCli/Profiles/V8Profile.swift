@@ -32,6 +32,14 @@ let v8Profile = Profile(
             "--expose-fast-api",
             "--experimental-wasm-rab-integration",
             "--wasm-test-streaming", // WebAssembly.compileStreaming & WebAssembly.instantiateStreaming()
+            "--trace-elements-transitions",
+            "--trace-normalization",
+            "--trace-gc",
+            "--trace-ic",
+            "--trace-opt",
+            "--trace-deopt",
+            "--trace-migration",
+            "--trace-generalization",
         ]
 
         guard randomize else { return args }
@@ -63,6 +71,14 @@ let v8Profile = Profile(
             if probability(0.3) {
                 args.append("--wasm-assert-types")
             }
+        }
+
+        // This greatly helps the fuzzer to decide inlining wasm functions into each other when
+        // %WasmTierUpFunction() is used as in most cases the call counts will be way too low to
+        // align with V8's current inlining heuristics (which uses absolute call counts as a
+        // deciding factor).
+        if probability(0.5) {
+            args.append("--wasm-inlining-ignore-call-counts")
         }
 
         // This greatly helps the fuzzer to decide inlining wasm functions into each other when
