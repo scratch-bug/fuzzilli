@@ -10,7 +10,11 @@ hyeong7/*
 hyeong7
 # custom GCE configuration
 Cloud/GCE/config.sh
+myCorpus
+myCorpus/*
 
+outResult
+outResult/*
 # node.js dependencies, used by the JavaScript parser for the FuzzIL compiler
 node_modules
 package-lock.json
